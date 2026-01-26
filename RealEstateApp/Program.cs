@@ -8,11 +8,15 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
                        throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(connectionString));
+    options.UseSqlServer(connectionString)); // <-- Đổi thành UseSqlServer
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+
+// Đăng ký UnitOfWork
+builder.Services.AddScoped<RealEstateApp.Repositories.IUnitOfWork, RealEstateApp.Repositories.UnitOfWork>();
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
@@ -35,6 +39,13 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+
+// --- THÊM ĐOẠN NÀY ---
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+// ---------------------
 
 app.MapControllerRoute(
     name: "default",

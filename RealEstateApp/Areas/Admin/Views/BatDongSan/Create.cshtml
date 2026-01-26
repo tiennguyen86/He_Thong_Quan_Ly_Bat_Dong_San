@@ -1,0 +1,50 @@
+@model RealEstateApp.Models.BatDongSan
+
+
+<div class="alert alert-info">
+    DEBUG DATA: @(ViewBag.DsLoai == null ? "NULL (Chưa có dữ liệu)" : "ĐÃ CÓ DỮ LIỆU")
+</div>
+
+@{
+    Layout = "_Layout"; // Hoặc layout admin riêng nếu bạn có
+}
+
+<h2>Thêm mới Bất Động Sản</h2>
+
+<form method="post" enctype="multipart/form-data"> <div class="mb-3">
+        <label>Tiêu đề</label>
+        <input asp-for="TieuDe" class="form-control" />
+        <span asp-validation-for="TieuDe" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label>Giá bán</label>
+        <input asp-for="Gia" type="number" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Loại Bất Động Sản</label>
+    
+        <select asp-for="LoaiBatDongSanId" asp-items="ViewBag.DsLoai" class="form-control">
+            <option value="">-- Chọn loại bất động sản --</option>
+        </select>
+    
+        <span asp-validation-for="LoaiBatDongSanId" class="text-danger"></span>
+    </div>
+    
+    @* <div class="mb-3"> *@
+    @*     <label>Loại Bất Động Sản (Test Cứng)</label> *@
+    @* *@
+    @*     <select name="LoaiBatDongSanId" class="form-control"> *@
+    @*         <option value="1">TEST: Cứng HTML 1</option> *@
+    @*         <option value="2">TEST: Cứng HTML 2</option> *@
+    @*     </select> *@
+    @* </div> *@
+
+    <div class="mb-3">
+        <label>Hình ảnh</label>
+        <input type="file" name="fileAnh" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Lưu lại</button>
+</form>
