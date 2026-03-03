@@ -31,8 +31,9 @@ public class BatDongSanController : Controller
         
         // Tạo dữ liệu giả để test View
         var listTam = new List<LoaiBatDongSan> {
-            new LoaiBatDongSan { Id = 1, TenLoai = "TEST: Chung cư" },
-            new LoaiBatDongSan { Id = 2, TenLoai = "TEST: Nhà đất" }
+            // new LoaiBatDongSan { Id = 1, TenLoai = "TEST: Chung cư" },
+            // new LoaiBatDongSan { Id = 2, TenLoai = "TEST: Nhà đất" }
+            // Khai xuân 2026 
         };
         ViewBag.DsLoai = new SelectList(listTam, "Id", "TenLoai");
         return View();
