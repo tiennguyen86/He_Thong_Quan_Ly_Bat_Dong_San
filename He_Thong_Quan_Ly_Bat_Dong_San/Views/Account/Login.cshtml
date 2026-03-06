@@ -1,0 +1,49 @@
+@model He_Thong_Quan_Ly_Bat_Dong_San.ViewModels.LoginVM
+
+@{
+    ViewData["Title"] = "Đăng nhập";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+        <div class="card shadow border-0">
+            <div class="card-header bg-primary text-white text-center py-3">
+                <h4 class="mb-0"><i class="bi bi-box-arrow-in-right"></i> Đăng Nhập Hệ Thống</h4>
+            </div>
+            <div class="card-body p-4">
+                <form asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3 fw-bold"></div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label fw-bold">Email</label>
+                        <input asp-for="Email" class="form-control" placeholder="Nhập email của bạn" />
+                        <span asp-validation-for="Email" class="text-danger form-text"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label fw-bold">Mật khẩu</label>
+                        <input asp-for="Password" class="form-control" placeholder="Nhập mật khẩu" />
+                        <span asp-validation-for="Password" class="text-danger form-text"></span>
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <input asp-for="RememberMe" class="form-check-input" />
+                        <label asp-for="RememberMe" class="form-check-label">Ghi nhớ đăng nhập</label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">
+                        Đăng nhập
+                    </button>
+                </form>
+                
+                <div class="mt-3 text-center">
+                    <span>Chưa có tài khoản? <a asp-action="Register" class="text-decoration-none">Đăng ký ngay</a></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

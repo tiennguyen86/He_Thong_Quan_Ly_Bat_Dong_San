@@ -1,0 +1,33 @@
+@model IEnumerable<He_Thong_Quan_Ly_Bat_Dong_San.Models.Category>
+
+<div class="bg-white p-4 rounded-xl-custom shadow-soft position-sticky" style="top: 80px;">
+    <h6 class="text-uppercase text-muted fw-bold mb-4" style="font-size: 0.8rem; letter-spacing: 1px;">Phân loại</h6>
+    
+    <div class="list-group list-group-flush border-0 gap-2">
+        <a asp-controller="Home" asp-action="Index" asp-route-categoryId="" 
+           class="list-group-item list-group-item-action border-0 rounded-3 fw-bold d-flex justify-content-between align-items-center @(ViewBag.CurrentCategory == null || ViewBag.CurrentCategory == "Tất Cả Bất Động Sản" ? "bg-light text-primary-custom" : "text-secondary")">
+            <span><i class="bi bi-grid-1x2 me-2"></i> Tất cả</span>
+        </a>
+        
+        @foreach (var item in Model)
+        {
+            var isActive = ViewBag.CurrentCategory == item.Name;
+            <a asp-controller="Home" asp-action="Index" asp-route-categoryId="@item.Id" 
+               class="list-group-item list-group-item-action border-0 rounded-3 fw-medium d-flex justify-content-between align-items-center @(isActive ? "bg-light text-primary-custom fw-bold" : "text-secondary hover-bg-light")">
+                <span>
+                    <i class="bi @(item.Name.Contains("Chung") ? "bi-building" : (item.Name.Contains("Đất") ? "bi-map" : "bi-house-door")) me-2"></i>
+                    @item.Name
+                </span>
+            </a>
+        }
+    </div>
+
+    <div class="mt-5 p-4 text-white rounded-xl-custom position-relative overflow-hidden bg-primary-custom">
+        <div class="position-relative" style="z-index: 2;">
+            <p class="small opacity-75 mb-1">Cần hỗ trợ?</p>
+            <p class="fw-bold mb-3">Tư vấn miễn phí 24/7</p>
+            <button class="btn bg-accent btn-sm px-3 fw-bold rounded-3">Gọi ngay</button>
+        </div>
+        <i class="bi bi-headset position-absolute" style="font-size: 5rem; right: -15px; bottom: -20px; opacity: 0.1;"></i>
+    </div>
+</div>

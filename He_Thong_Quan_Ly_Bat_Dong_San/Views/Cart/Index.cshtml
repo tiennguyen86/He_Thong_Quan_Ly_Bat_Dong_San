@@ -1,0 +1,60 @@
+@model IEnumerable<He_Thong_Quan_Ly_Bat_Dong_San.Models.CartItem>
+
+@{
+    ViewData["Title"] = "Danh sách chờ xem nhà";
+}
+
+<div class="container mt-5">
+    <h2 class="text-primary mb-4"><i class="bi bi-cart-check"></i> Danh sách Bất Động Sản bạn muốn xem</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-warning text-center">
+            Bạn chưa chọn căn nhà nào. <br />
+            <a asp-controller="Home" asp-action="Index" class="btn btn-primary mt-3">Quay lại danh sách</a>
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Hình ảnh</th>
+                            <th>Tên Bất Động Sản</th>
+                            <th>Giá (VNĐ)</th>
+                            <th class="text-center">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <img src="@item.ImageUrl" alt="@item.Title" style="width: 80px; height: 60px; object-fit: cover;" class="rounded" />
+                                </td>
+                                <td class="fw-bold">@item.Title</td>
+                                <td class="text-danger fw-bold">@item.Price.ToString("N0")</td>
+                                <td class="text-center">
+                                    <a asp-controller="Cart" asp-action="RemoveFromCart" asp-route-id="@item.PropertyId" class="btn btn-outline-danger btn-sm">
+                                        <i class="bi bi-trash"></i> Xóa
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer bg-white d-flex justify-content-between align-items-center p-3">
+                <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Chọn thêm căn khác
+                </a>
+                
+                <a asp-controller="Cart" asp-action="Checkout" class="btn btn-success btn-lg px-5">
+                    Gửi yêu cầu đặt lịch <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    }
+</div>

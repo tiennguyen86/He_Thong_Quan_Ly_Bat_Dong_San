@@ -1,0 +1,52 @@
+@model He_Thong_Quan_Ly_Bat_Dong_San.ViewModels.RegisterVM
+
+@{
+    ViewData["Title"] = "Đăng ký tài khoản";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-success text-white text-center py-3">
+                <h4 class="mb-0"><i class="bi bi-person-plus"></i> Đăng Ký Thành Viên</h4>
+            </div>
+            <div class="card-body p-4">
+                <form asp-action="Register" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3 fw-bold"></div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="FullName" class="form-label fw-bold">Họ và Tên</label>
+                        <input asp-for="FullName" class="form-control" placeholder="Nhập họ tên của bạn..." />
+                        <span asp-validation-for="FullName" class="text-danger form-text"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label fw-bold">Email đăng nhập</label>
+                        <input asp-for="Email" class="form-control" placeholder="name@example.com" />
+                        <span asp-validation-for="Email" class="text-danger form-text"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label fw-bold">Mật khẩu</label>
+                        <input asp-for="Password" class="form-control" placeholder="Tối thiểu 6 ký tự" />
+                        <span asp-validation-for="Password" class="text-danger form-text"></span>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label asp-for="ConfirmPassword" class="form-label fw-bold">Xác nhận Mật khẩu</label>
+                        <input asp-for="ConfirmPassword" class="form-control" placeholder="Nhập lại mật khẩu" />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger form-text"></span>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-success w-100 py-2 fw-bold">
+                        Đăng ký ngay
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

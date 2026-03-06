@@ -1,0 +1,63 @@
+@model He_Thong_Quan_Ly_Bat_Dong_San.Models.Order
+@using He_Thong_Quan_Ly_Bat_Dong_San.Helpers
+
+
+@{
+    ViewData["Title"] = "Xác nhận yêu cầu đặt lịch";
+    // Lấy giỏ hàng ra để hiển thị cột bên phải
+    var cart = Context.Session.Get<List<He_Thong_Quan_Ly_Bat_Dong_San.Models.CartItem>>("MyCart") ?? new List<He_Thong_Quan_Ly_Bat_Dong_San.Models.CartItem>();
+}
+
+<div class="container mt-5">
+    <h2 class="text-success mb-4"><i class="bi bi-calendar-check"></i> Xác nhận Đặt lịch xem nhà</h2>
+
+    <div class="row">
+        <div class="col-md-7">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white fw-bold">Thông tin liên hệ của bạn</div>
+                <div class="card-body">
+                    <form asp-action="Checkout" method="post">
+                        <div class="mb-3">
+                            <label asp-for="CustomerName" class="form-label">Họ và Tên <span class="text-danger">*</span></label>
+                            <input asp-for="CustomerName" class="form-control" placeholder="Ví dụ: Nguyễn Văn A" />
+                            <span asp-validation-for="CustomerName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="PhoneNumber" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                            <input asp-for="PhoneNumber" class="form-control" placeholder="09xxxxxxx" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Notes" class="form-label">Ghi chú thêm (Thời gian rảnh, yêu cầu đặc biệt...)</label>
+                            <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-success btn-lg w-100">
+                            <i class="bi bi-send-check"></i> Hoàn tất Đặt lịch
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-5">
+            <div class="card shadow-sm bg-light">
+                <div class="card-header fw-bold">Danh sách Bất động sản (@cart.Count căn)</div>
+                <ul class="list-group list-group-flush">
+                    @foreach (var item in cart)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="my-0">@item.Title</h6>
+                                <small class="text-muted">Giá: @item.Price.ToString("N0") VNĐ</small>
+                            </div>
+                            <img src="@item.ImageUrl" style="width: 50px; height: 40px; object-fit: cover;" class="rounded" />
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

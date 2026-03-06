@@ -1,0 +1,151 @@
+﻿@using Microsoft.AspNetCore.Http
+@using He_Thong_Quan_Ly_Bat_Dong_San.Helpers
+@using He_Thong_Quan_Ly_Bat_Dong_San.Models
+@inject IHttpContextAccessor HttpContextAccessor
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>@ViewData["Title"] - LuxEstate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+    
+    <style>
+        /* CSS Tùy chỉnh chuẩn LuxEstate (Đã fix lỗi đỏ của Rider) */
+        body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; }
+        
+        .text-primary-custom { color: #0d1b2a !important; }
+        .bg-primary-custom { background-color: #0d1b2a !important; }
+        .text-accent { color: #ff6b6b !important; }
+        .bg-accent { background-color: #ff6b6b !important; color: white; border: none; }
+        .bg-accent:hover { filter: brightness(1.1); color: white; }
+        
+        .rounded-xl-custom { border-radius: 16px; }
+        .shadow-soft { box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #f1f1f1; }
+        
+        /* Hiệu ứng Header & Search */
+        .sticky-navbar { position: sticky; top: 0; z-index: 1050; background: white; }
+        .hover-accent:hover { color: #ff6b6b !important; transition: 0.3s; }
+        
+        /* Hiệu ứng Footer */
+        .site-footer { background-color: #0d1b2a; color: #9ca3af; padding: 4rem 0 2rem; margin-top: 4rem; }
+        .site-footer h4 { color: white; font-weight: 700; margin-bottom: 1.5rem; }
+        .site-footer a { color: #9ca3af; text-decoration: none; transition: color 0.3s; }
+        .site-footer a:hover { color: #ff6b6b; }
+    </style>
+</head>
+<body>
+
+<header class="sticky-navbar border-bottom shadow-sm py-2">
+    <div class="container d-flex align-items-center justify-content-between gap-3">
+        <a asp-area="" asp-controller="Home" asp-action="Index" class="d-flex align-items-center text-decoration-none gap-2 flex-shrink-0">
+            <div class="bg-primary-custom text-white rounded d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                <i class="bi bi-houses-fill fs-5"></i>
+            </div>
+            <span class="fs-4 fw-bold text-primary-custom d-none d-lg-block mb-0">LuxEstate</span>
+        </a>
+
+        <form asp-controller="Home" asp-action="Index" method="get" class="flex-grow-1 mx-md-4 d-none d-md-flex" style="max-width: 600px;">
+            <div class="input-group shadow-sm" style="border-radius: 20px; overflow: hidden;">
+                <span class="input-group-text bg-light border-0 text-muted"><i class="bi bi-search"></i></span>
+                <input type="text" name="searchString" value="@ViewBag.CurrentSearch" class="form-control border-0 bg-light py-2 px-1" placeholder="Tìm kiếm khu vực, dự án, tên đường...">
+                <button type="submit" class="btn btn-primary d-none">Tìm</button>
+            </div>
+        </form>
+
+        <div class="d-flex align-items-center gap-3 flex-shrink-0">
+            
+            @if (User.IsInRole("Admin"))
+            {
+                <a class="text-danger fw-bold border border-danger rounded px-2 py-1 text-decoration-none bg-white d-none d-md-block" asp-area="Admin" asp-controller="Properties" asp-action="Index" style="font-size: 0.85rem;">
+                    <i class="bi bi-shield-lock"></i> Quản trị
+                </a>
+            }
+
+            @{
+                var cart = HttpContextAccessor.HttpContext?.Session.Get<List<CartItem>>("MyCart") ?? new List<CartItem>();
+                int cartCount = cart.Count;
+            }
+            <a asp-controller="Cart" asp-action="Index" class="position-relative text-dark fs-5 text-decoration-none me-2">
+                <i class="bi bi-heart text-secondary hover-accent"></i>
+                @if (cartCount > 0)
+                {
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-accent" style="font-size: 0.6rem;">@cartCount</span>
+                }
+            </a>
+
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <span class="text-dark fw-medium d-none d-lg-block" style="font-size: 0.9rem;">@User.Identity.Name</span>
+                <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                    <button type="submit" class="btn btn-outline-danger btn-sm rounded-3">Đăng xuất</button>
+                </form>
+            }
+            else
+            {
+                <a asp-area="" asp-controller="Account" asp-action="Login" class="btn btn-light fw-bold text-primary-custom rounded-3 d-none d-sm-block">Đăng nhập</a>
+                <a asp-area="" asp-controller="Account" asp-action="Register" class="btn bg-primary-custom text-white fw-bold rounded-3 shadow-sm">Đăng ký</a>
+            }
+        </div>
+    </div>
+</header>
+
+<main role="main" class="pb-3">
+    @RenderBody()
+</main>
+
+<footer class="site-footer">
+    <div class="container">
+        <div class="row g-5 mb-5">
+            <div class="col-md-4">
+                <div class="d-flex align-items-center gap-2 text-white mb-4">
+                    <i class="bi bi-houses-fill fs-3"></i>
+                    <span class="fs-3 fw-bold">LuxEstate</span>
+                </div>
+                <p>LuxEstate tự hào là nền tảng kết nối bất động sản cao cấp hàng đầu Việt Nam, mang lại giá trị bền vững cho nhà đầu tư.</p>
+            </div>
+            <div class="col-md-2">
+                <h4>Liên kết</h4>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="#">Về chúng tôi</a></li>
+                    <li class="mb-2"><a href="#">Danh sách dự án</a></li>
+                    <li class="mb-2"><a href="#">Tin tức</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h4>Chính sách</h4>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="#">Điều khoản dịch vụ</a></li>
+                    <li class="mb-2"><a href="#">Chính sách bảo mật</a></li>
+                    <li class="mb-2"><a href="#">Giải quyết khiếu nại</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h4>Đăng ký nhận tin</h4>
+                <p>Cập nhật cơ hội đầu tư tốt nhất.</p>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control bg-dark border-secondary text-white" placeholder="Email của bạn">
+                    <button class="btn bg-accent" type="button"><i class="bi bi-send-fill"></i></button>
+                </div>
+            </div>
+        </div>
+        <div class="border-top border-secondary pt-4 d-flex justify-content-between align-items-center">
+            <small>© 2026 LuxEstate Platform. All rights reserved.</small>
+            <div class="d-flex gap-3 fs-5">
+                <a href="#"><i class="bi bi-facebook"></i></a>
+                <a href="#"><i class="bi bi-instagram"></i></a>
+                <a href="#"><i class="bi bi-youtube"></i></a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

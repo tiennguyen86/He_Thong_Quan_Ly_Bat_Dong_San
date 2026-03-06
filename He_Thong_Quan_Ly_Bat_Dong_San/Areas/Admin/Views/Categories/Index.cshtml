@@ -1,0 +1,51 @@
+@model IEnumerable<He_Thong_Quan_Ly_Bat_Dong_San.Models.Category>
+
+@{
+    ViewData["Title"] = "Danh sách Loại BĐS";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-primary"><i class="bi bi-list-task"></i> Quản lý Loại Bất Động Sản</h2>
+    <a asp-action="Create" class="btn btn-success">
+        <i class="bi bi-plus-circle"></i> Thêm mới
+    </a>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-bordered table-hover align-middle">
+        <thead class="table-light">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th class="text-center" style="width: 250px;">Thao tác</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model) {
+            <tr>
+                <td class="fw-bold text-primary">
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td class="text-center">
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-pencil-square"></i> Sửa
+                    </a>
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info">
+                        <i class="bi bi-eye"></i> Xem
+                    </a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">
+                        <i class="bi bi-trash"></i> Xóa
+                    </a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

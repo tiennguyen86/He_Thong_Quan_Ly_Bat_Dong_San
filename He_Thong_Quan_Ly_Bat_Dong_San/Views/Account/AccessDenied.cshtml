@@ -1,0 +1,21 @@
+@{
+    ViewData["Title"] = "Từ chối truy cập";
+}
+
+<div class="container mt-5 text-center">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow border-danger">
+                <div class="card-body p-5">
+                    <h1 class="text-danger display-1"><i class="bi bi-shield-lock-fill"></i></h1>
+                    <h2 class="text-danger mt-3">Lỗi 403 - Cấm Truy Cập!</h2>
+                    <p class="lead mt-3">Xin lỗi, bạn không có đủ quyền hạn (Role Admin) để vào khu vực quản trị này.</p>
+                    <hr />
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-primary mt-3">
+                        <i class="bi bi-house-door"></i> Quay lại Trang Chủ
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
