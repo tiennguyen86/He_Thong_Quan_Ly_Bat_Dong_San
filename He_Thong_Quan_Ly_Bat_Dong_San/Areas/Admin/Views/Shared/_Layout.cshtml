@@ -1,53 +1,96 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Admin Bất Động Sản</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <title>@ViewData["Title"] - LuxEstate Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f4f6f9; overflow-x: hidden; }
+        
+        /* CSS Sidebar (Menu bên trái) */
+        .sidebar {
+            min-height: 100vh;
+            background-color: #0d1b2a;
+            color: #fff;
+            transition: all 0.3s;
+        }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.7);
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin: 4px 15px;
+            font-weight: 500;
+        }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background-color: #ff6b6b;
+            color: #fff;
+        }
+        .sidebar .nav-link i { margin-right: 10px; font-size: 1.1rem; }
+        
+        /* CSS Topbar (Thanh trên cùng) */
+        .topbar { background-color: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        
+        /* Box Content */
+        .admin-content { padding: 30px; width: 100%; }
+        .card-custom { border: none; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.03); }
+    </style>
 </head>
-<body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-        <div class="container-fluid">
-            <a class="navbar-brand" asp-area="Admin" asp-controller="Home" asp-action="Index">🏡 Real Estate Admin</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" asp-area="Admin" asp-controller="Categories" asp-action="Index">Quản lý Loại BĐS</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-area="Admin" asp-controller="Properties" asp-action="Index">Quản lý Sản phẩm</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-area="Admin" asp-controller="Orders" asp-action="Index">Quản lý Đặt lịch</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="d-flex align-items-center">
-                @if (User.Identity?.IsAuthenticated == true)
-                {
-                    <span class="text-white me-3">Xin chào, <strong>@User.Identity.Name</strong>!</span>
-                    <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" class="m-0">
-                        <button type="submit" class="btn btn-outline-light btn-sm">
-                            <i class="bi bi-box-arrow-right"></i> Đăng xuất
-                        </button>
-                    </form>
-                }
-            </div>
-        </div>
-    </nav>
+<body>
 
-    <div class="container bg-white p-4 rounded shadow-sm">
-        <main role="main" class="pb-3">
+<div class="d-flex">
+    <div class="sidebar d-flex flex-column" style="width: 260px;">
+        <a asp-area="" asp-controller="Home" asp-action="Index" class="text-decoration-none text-white d-flex align-items-center justify-content-center py-4 mb-3 border-bottom border-secondary">
+            <div class="bg-white text-dark rounded d-flex align-items-center justify-content-center me-2" style="width: 35px; height: 35px;">
+                <i class="bi bi-houses-fill fs-5"></i>
+            </div>
+            <span class="fs-4 fw-bold">LuxAdmin</span>
+        </a>
+
+        <ul class="nav flex-column mb-auto">
+            <li class="nav-item">
+                <a asp-area="Admin" asp-controller="Properties" asp-action="Index" class="nav-link active">
+                    <i class="bi bi-building"></i> Quản lý Bất động sản
+                </a>
+            </li>
+            <li class="nav-item">
+                <a asp-area="Admin" asp-controller="Categories" asp-action="Index" class="nav-link">
+                    <i class="bi bi-tags"></i> Quản lý Danh mục
+                </a>
+            </li>
+            <li class="nav-item">
+                <a asp-area="Admin" asp-controller="Orders" asp-action="Index" class="nav-link">
+                    <i class="bi bi-calendar-check"></i> Đơn Đặt lịch
+                </a>
+            </li>
+        </ul>
+        
+        <div class="p-4 mt-auto">
+            <a asp-area="" asp-controller="Home" asp-action="Index" class="btn btn-outline-light w-100 rounded-3">
+                <i class="bi bi-box-arrow-left"></i> Về trang Khách
+            </a>
+        </div>
+    </div>
+
+    <div class="flex-grow-1 bg-light">
+        <header class="topbar py-3 px-4 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold text-dark">Bảng Điều Khiển</h5>
+            <div class="d-flex align-items-center gap-3">
+                <span class="text-muted fw-medium">Xin chào, Sếp <strong>@User.Identity?.Name</strong>!</span>
+            </div>
+        </header>
+
+        <main class="admin-content">
             @RenderBody()
         </main>
     </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
