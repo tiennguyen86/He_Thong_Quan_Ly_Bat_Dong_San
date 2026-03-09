@@ -36,4 +36,11 @@ public class Property
     [NotMapped]
     [Display(Name = "Hình ảnh BĐS")]
     public IFormFile? ImageUpload { get; set; }
+    
+    // 1. Mối quan hệ 1-Nhiều: Một nhà có nhiều ảnh
+    public ICollection<PropertyImage>? PropertyImages { get; set; }
+
+    // 2. Cái "rổ" này chỉ dùng để hứng file từ giao diện gửi lên (không lưu vào DB)
+    [NotMapped]
+    public List<IFormFile>? GalleryUploads { get; set; }
 }
