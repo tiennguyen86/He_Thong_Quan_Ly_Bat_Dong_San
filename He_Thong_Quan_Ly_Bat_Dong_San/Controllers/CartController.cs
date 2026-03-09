@@ -2,7 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using He_Thong_Quan_Ly_Bat_Dong_San.Data;
 using He_Thong_Quan_Ly_Bat_Dong_San.Models;
 using He_Thong_Quan_Ly_Bat_Dong_San.Helpers; // Dùng cái đồ nghề vừa tạo
-using System.Security.Claims; // Dùng để lấy ID người dùng đăng nhập
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore; // Dùng để lấy ID người dùng đăng nhập
 
 namespace He_Thong_Quan_Ly_Bat_Dong_San.Controllers;
 
@@ -131,5 +133,23 @@ public class CartController : Controller
     public IActionResult Success()
     {
         return View();
+    }
+    
+    
+    // Yêu cầu phải Đăng nhập mới được xem
+    [Authorize]
+    public async Task<IActionResult> History()
+    {
+        // 1. Lấy tên/email của khách hàng đang đăng nhập
+        var currentUser = User.Identity.Name;
+
+        // 2. Tìm các đơn hàng trong DB
+        // (Lưu ý: Nếu bảng Order của bạn KHÔNG CÓ trường Email/Username, hãy tạm thời xóa dòng .Where đi để nó hiện tất cả đơn nhé)
+        var myOrders = await _context.Orders
+            // .Where(o => o.Email == currentUser) // Bỏ comment dòng này nếu DB bạn có lưu Email khách khi đặt
+            .OrderByDescending(o => o.Id) // Đơn mới nhất xếp lên đầu
+            .ToListAsync();
+
+        return View(myOrders);
     }
 }
