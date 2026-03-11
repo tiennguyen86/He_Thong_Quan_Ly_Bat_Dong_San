@@ -58,9 +58,10 @@
 
         <div class="d-flex align-items-center gap-3 flex-shrink-0">
             
-            @if (User.IsInRole("Admin"))
+            @if (User.IsInRole("Admin") || User.IsInRole("Sale"))
             {
-                <a class="text-danger fw-bold border border-danger rounded px-2 py-1 text-decoration-none bg-white d-none d-md-block" asp-area="Admin" asp-controller="Properties" asp-action="Index" style="font-size: 0.85rem;">
+                <a class="text-danger fw-bold border border-danger rounded px-2 py-1 text-decoration-none bg-white d-none d-md-block" 
+                   asp-area="Admin" asp-controller="Orders" asp-action="Index" style="font-size: 0.85rem;">
                     <i class="bi bi-shield-lock"></i> Quản trị
                 </a>
             }
@@ -79,7 +80,15 @@
 
             @if (User.Identity?.IsAuthenticated == true)
             {
-                <span class="text-dark fw-medium d-none d-lg-block" style="font-size: 0.9rem;">@User.Identity.Name</span>
+                @if (!User.IsInRole("Admin") && !User.IsInRole("Sale"))
+                {
+                    <a asp-controller="Cart" asp-action="History" class="text-dark fw-medium text-decoration-none me-3 hover-accent d-none d-md-block" style="font-size: 0.9rem;">
+                        <i class="bi bi-clock-history text-secondary"></i> Lịch sử đặt lịch
+                    </a>
+                }
+
+                <span class="text-dark fw-bold d-none d-lg-block border-start ps-3 me-3" style="font-size: 0.9rem;">@User.Identity.Name</span>
+                
                 <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" class="m-0">
                     <button type="submit" class="btn btn-outline-danger btn-sm rounded-3">Đăng xuất</button>
                 </form>
@@ -88,6 +97,7 @@
             {
                 <a asp-area="" asp-controller="Account" asp-action="Login" class="btn btn-light fw-bold text-primary-custom rounded-3 d-none d-sm-block">Đăng nhập</a>
                 <a asp-area="" asp-controller="Account" asp-action="Register" class="btn bg-primary-custom text-white fw-bold rounded-3 shadow-sm">Đăng ký</a>
+                
             }
         </div>
     </div>
@@ -119,7 +129,7 @@
                 <h4>Chính sách</h4>
                 <ul class="list-unstyled">
                     <li class="mb-2"><a href="#">Điều khoản dịch vụ</a></li>
-                    <li class="mb-2"><a href="#">Chính sách bảo mật</a></li>
+                    <li class="mb-2"><a asp-area="" asp-controller="Home" asp-action="Privacy" class="text-muted text-decoration-none">Chính sách bảo mật</a></li>
                     <li class="mb-2"><a href="#">Giải quyết khiếu nại</a></li>
                 </ul>
             </div>
