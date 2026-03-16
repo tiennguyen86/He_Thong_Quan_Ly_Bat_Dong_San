@@ -1,0 +1,68 @@
+@model He_Thong_Quan_Ly_Bat_Dong_San.Models.Order
+
+@{
+    ViewData["Title"] = "Xử lý Đơn Đặt Lịch";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8 col-lg-6">
+        <div class="card card-custom p-4 shadow-sm border-0 rounded-4">
+            <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                <h4 class="fw-bold text-primary-custom"><i class="bi bi-headset text-warning me-2"></i> @ViewData["Title"]</h4>
+                <a asp-action="Index" class="btn btn-outline-secondary fw-bold rounded-pill px-4">
+                    <i class="bi bi-arrow-left"></i> Quay lại
+                </a>
+            </div>
+
+            <form asp-action="Edit" class="mt-2">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="AppUserId" />
+                <input type="hidden" asp-for="OrderDate" />
+
+                <div class="bg-light p-4 rounded-4 border border-light mb-4">
+                    <div class="row g-3 mb-3">
+                        <div class="col-sm-6">
+                            <label asp-for="CustomerName" class="form-label fw-bold text-muted small">Tên Khách Hàng</label>
+                            <input asp-for="CustomerName" class="form-control border-0 shadow-sm fw-bold bg-white" readonly />
+                        </div>
+                        <div class="col-sm-6">
+                            <label asp-for="PhoneNumber" class="form-label fw-bold text-muted small">Số Điện Thoại</label>
+                            <div class="input-group shadow-sm rounded-3 overflow-hidden">
+                                <span class="input-group-text bg-white border-0"><i class="bi bi-telephone-fill text-success"></i></span>
+                                <input asp-for="PhoneNumber" class="form-control border-0 fw-bold text-success bg-white" readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Notes" class="form-label fw-bold text-muted small">Ghi chú của khách</label>
+                        <textarea asp-for="Notes" class="form-control border-0 shadow-sm bg-white text-muted" rows="2" readonly></textarea>
+                    </div>
+
+                    <div class="mb-2 p-3 bg-white rounded-3 border border-warning shadow-sm">
+                        <label asp-for="Status" class="form-label fw-bold text-dark fs-6 mb-3">Trạng thái Đơn hàng <span class="text-danger">*</span></label>
+                        <select asp-for="Status" class="form-select form-select-lg border-0 bg-light fw-bold text-primary-custom" style="cursor: pointer;">
+                            <option value="Chờ xác nhận"> Chờ xác nhận</option>
+                            <option value="Đã duyệt"> Đã liên hệ / Đã duyệt</option>
+                            <option value="Thành công"> Giao dịch Thành công</option>
+                            <option value="Từ chối"> Hủy / Từ chối</option>
+                        </select>
+                        <span asp-validation-for="Status" class="text-danger small mt-1"></span>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 mt-4">
+                    <button type="submit" class="btn text-white btn-lg fw-bold shadow" style="background-color: #0d1b2a; border-radius: 12px;">
+                        <i class="bi bi-check-circle-fill me-2"></i> Lưu Trạng Thái
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
