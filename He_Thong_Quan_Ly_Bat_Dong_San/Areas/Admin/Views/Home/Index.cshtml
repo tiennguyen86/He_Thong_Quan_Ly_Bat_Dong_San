@@ -1,0 +1,183 @@
+@model IEnumerable<He_Thong_Quan_Ly_Bat_Dong_San.Models.Order>
+@{
+    ViewData["Title"] = "Tổng quan hệ thống";
+}
+
+<div class="container-fluid mt-4 mb-5">
+    
+    <div class="d-flex align-items-center mb-4">
+        <h3 class="fw-bold text-dark"><i class="bi bi-speedometer2 text-primary me-2"></i> @ViewData["Title"]</h3>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100 bg-white p-3 border-start border-info border-4">
+                <div class="d-flex align-items-center">
+                    <div class="bg-info bg-opacity-10 p-3 rounded-3 text-info me-3">
+                        <i class="bi bi-tags fs-3"></i>
+                    </div>
+                    <div>
+                        <p class="text-muted mb-0 fw-bold small">DANH MỤC BĐS</p>
+                        <h3 class="fw-bold mb-0 text-dark">@ViewBag.TotalCategories</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100 bg-white p-3 border-start border-success border-4">
+                <div class="d-flex align-items-center">
+                    <div class="bg-success bg-opacity-10 p-3 rounded-3 text-success me-3">
+                        <i class="bi bi-calendar-check fs-3"></i>
+                    </div>
+                    <div>
+                        <p class="text-muted mb-0 fw-bold small">TỔNG ĐƠN ĐẶT LỊCH</p>
+                        <h3 class="fw-bold mb-0 text-dark">@ViewBag.TotalOrders</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100 bg-white p-3 border-start border-warning border-4">
+                <div class="d-flex align-items-center">
+                    <div class="bg-warning bg-opacity-10 p-3 rounded-3 text-warning me-3">
+                        <i class="bi bi-hourglass-split fs-3"></i>
+                    </div>
+                    <div>
+                        <p class="text-muted mb-0 fw-bold small text-danger">ĐƠN CHỜ XỬ LÝ</p>
+                        <h3 class="fw-bold mb-0 text-danger">@ViewBag.PendingOrders</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+                <h5 class="fw-bold mb-3">Tỷ lệ danh mục BĐS</h5>
+                <div class="d-flex justify-content-center align-items-center" style="min-height: 250px;">
+                    <canvas id="categoryPieChart" style="max-height: 250px; width: 100%;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+                <h5 class="fw-bold mb-3">Giá trung bình theo danh mục</h5>
+                <div class="d-flex justify-content-center align-items-center" style="min-height: 250px;">
+                    <canvas id="priceBarChart" style="max-height: 250px; width: 100%;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold mb-0">Đơn đặt lịch mới nhất</h5>
+            <a asp-controller="Orders" asp-action="Index" class="btn btn-sm btn-outline-primary rounded-pill px-3">Xem tất cả</a>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light text-muted small">
+                    <tr>
+                        <th class="py-3">KHÁCH HÀNG</th>
+                        <th>SỐ ĐIỆN THOẠI</th>
+                        <th>TRẠNG THÁI</th>
+                        <th class="text-center">THAO TÁC</th>
+                    </tr>
+                </thead>
+                <tbody class="border-top-0">
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center py-5 text-muted">
+                                <i class="bi bi-inbox fs-1 d-block mb-2 opacity-50"></i>
+                                Chưa có đơn đặt lịch nào
+                            </td>
+                        </tr>
+                    }
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="fw-bold text-primary py-3">@item.CustomerName</td>
+                            <td>@item.PhoneNumber</td>
+                            <td>
+                                @if (item.Status == "Chờ xác nhận")
+                                {
+                                    <span class="badge bg-warning text-dark px-3 py-2 rounded-pill">@item.Status</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success px-3 py-2 rounded-pill">@item.Status</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                <a asp-controller="Orders" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-primary rounded-3 shadow-sm">
+                                    <i class="bi bi-pencil-square"></i> Xử lý
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        // Lấy dữ liệu từ ViewBag do Controller truyền sang
+        // Dùng fallback '[]' phòng trường hợp Controller chưa truyền dữ liệu để tránh lỗi vỡ JS
+        const chartLabels = @Html.Raw(ViewBag.Labels ?? "[]");
+        const countData = @Html.Raw(ViewBag.Counts ?? "[]");
+        const avgPriceData = @Html.Raw(ViewBag.AvgPrices ?? "[]");
+
+        // Vẽ Biểu đồ Tròn
+        if(chartLabels.length > 0) {
+            const ctxPie = document.getElementById('categoryPieChart').getContext('2d');
+            new Chart(ctxPie, {
+                type: 'doughnut',
+                data: {
+                    labels: chartLabels,
+                    datasets: [{
+                        data: countData,
+                        backgroundColor: ['#ff6b6b', '#4ecdc4', '#ffe66d', '#1a535c', '#f7fff7'],
+                        borderWidth: 0,
+                        hoverOffset: 8
+                    }]
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+
+            // Vẽ Biểu đồ Cột
+            const ctxBar = document.getElementById('priceBarChart').getContext('2d');
+            new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: chartLabels,
+                    datasets: [{
+                        label: 'Giá trị trung bình (VNĐ)',
+                        data: avgPriceData,
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                        borderRadius: 6,
+                        barPercentage: 0.5
+                    }]
+                },
+                options: {
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+    </script>
+}

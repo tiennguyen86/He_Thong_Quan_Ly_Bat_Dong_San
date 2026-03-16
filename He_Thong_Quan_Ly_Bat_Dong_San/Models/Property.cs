@@ -22,6 +22,9 @@ public class Property
 
     [Required(ErrorMessage = "Vui lòng nhập địa chỉ")]
     public string Address { get; set; } = string.Empty;
+    
+    [Required(ErrorMessage = "Vui lòng nhập mô tả")]
+    public string Description { get; set; } = string.Empty;
 
     // Link ảnh trong database
     public string? ImageUrl { get; set; }

@@ -1,0 +1,263 @@
+@model IEnumerable<He_Thong_Quan_Ly_Bat_Dong_San.Models.AppUser>
+
+@{
+ViewData["Title"] = "Quản lý Tài Khoản Người Dùng";
+}
+
+<div class="card card-custom p-4 mt-3 shadow-sm border-0 rounded-4 mb-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <h4 class="fw-bold" style="color: #0d1b2a;">
+            <i class="bi bi-people-fill text-primary me-2"></i> @ViewData["Title"]
+        </h4>
+
+        <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill">
+            Tổng: @(ViewBag.TotalUsers ?? 0) người dùng
+        </span>
+    </div>
+
+    <form asp-action="Index" method="get" class="row g-3 mb-4 bg-light p-3 rounded-4">
+        <div class="col-md-5">
+            <div class="input-group">
+                <span class="input-group-text bg-white border-end-0">
+                    <i class="bi bi-search text-muted"></i>
+                </span>
+
+                <input type="text"
+                       name="searchString"
+                       value="@ViewBag.CurrentSearch"
+                       class="form-control border-start-0 ps-0"
+                       placeholder="Tìm theo tên hoặc email...">
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <select name="statusFilter" class="form-select">
+                <option value="all" selected="@(ViewBag.CurrentFilter == "all")">-- Tất cả trạng thái --</option>
+                <option value="active" selected="@(ViewBag.CurrentFilter == "active")">Đang hoạt động</option>
+                <option value="locked" selected="@(ViewBag.CurrentFilter == "locked")">Đã khóa</option>
+            </select>
+        </div>
+
+        <div class="col-md-3 d-flex gap-2">
+            <button type="submit" class="btn btn-primary fw-bold w-100">
+                <i class="bi bi-funnel"></i> Lọc
+            </button>
+
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-repeat"></i>
+            </a>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="bg-light text-muted" style="font-size: 0.85rem;">
+            <tr>
+                <th class="py-3 ps-3">ID TÀI KHOẢN</th>
+                <th class="py-3">TÊN NGƯỜI DÙNG / EMAIL</th>
+                <th class="py-3">SỐ ĐIỆN THOẠI</th>
+                <th class="py-3 text-center">TRẠNG THÁI</th>
+                <th class="py-3 text-center">THAO TÁC</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            @if (Model != null && Model.Any())
+            {
+            foreach (var item in Model)
+            {
+            <tr>
+                <td class="ps-3 text-muted small">
+                    @(string.IsNullOrEmpty(item.Id) ? "-" : item.Id.Substring(0,8) + "...")
+                </td>
+
+                <td>
+                    <div class="d-flex align-items-center">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex justify-content-center align-items-center me-3 fw-bold"
+                             style="width:40px;height:40px;">
+                            @(string.IsNullOrEmpty(item.UserName) ? "U" : item.UserName.Substring(0,1).ToUpper())
+                        </div>
+
+                        <div>
+                            <h6 class="fw-bold mb-0 text-dark">@item.UserName</h6>
+                            <span class="text-muted small">@item.Email</span>
+                        </div>
+                    </div>
+                </td>
+
+                <td>
+                    @if (string.IsNullOrEmpty(item.PhoneNumber))
+                    {
+                    <span class="badge bg-warning-subtle text-warning">Chưa cập nhật</span>
+                    }
+                    else
+                    {
+                    <span class="fw-medium">@item.PhoneNumber</span>
+                    }
+                </td>
+
+                <td class="text-center">
+                    @if(item.IsActive)
+                    {
+                    <span class="badge bg-success">Hoạt động</span>
+                    }
+                    else
+                    {
+                    <span class="badge bg-danger">Đã khóa</span>
+                    }
+                </td>
+
+                <td class="text-center">
+                    @if (item.UserName == User.Identity.Name)
+                    {
+                    <span class="badge bg-secondary px-3 py-2">Đang đăng nhập</span>
+                    }
+                    else
+                    {
+                    <div class="d-flex justify-content-center align-items-center gap-1">
+                        <form asp-action="ToggleStatus" asp-route-id="@item.Id" method="post" class="m-0">
+                            @Html.AntiForgeryToken()
+
+                            @if (item.IsActive == false)
+                            {
+                            <button type="submit"
+                                    class="btn btn-sm btn-success rounded-3 fw-bold shadow-sm"
+                                    data-bs-toggle="tooltip"
+                                    title="Khôi phục tài khoản">
+                                <i class="bi bi-arrow-counterclockwise"></i> Khôi phục
+                            </button>
+                            }
+                            else
+                            {
+                            <button type="submit"
+                                    class="btn btn-sm btn-outline-danger rounded-3 fw-bold"
+                                    onclick="return confirm('Xác nhận khóa tài khoản này?');"
+                                    data-bs-toggle="tooltip"
+                                    title="Khóa tài khoản">
+                                <i class="bi bi-lock-fill"></i> Khóa
+                            </button>
+                            }
+                        </form>
+
+                        <button type="button" class="btn btn-sm btn-outline-primary rounded-3 fw-bold"
+                                data-bs-toggle="modal" data-bs-target="#resetPassModal"
+                                data-userid="@item.Id" data-username="@item.UserName">
+                            <i class="bi bi-key-fill"></i> Đổi MK
+                        </button>
+                    </div>
+                    }
+                </td>
+            </tr>
+            }
+            }
+            else
+            {
+            <tr>
+                <td colspan="5" class="text-center py-4 text-muted">
+                    <i class="bi bi-database-fill-exclamation fs-4 me-2"></i>
+                    Không có dữ liệu người dùng
+                </td>
+            </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+
+    @if (ViewBag.TotalPages > 1)
+    {
+    <div class="mt-4 d-flex justify-content-end border-top pt-4">
+        <nav>
+            <ul class="pagination gap-2 shadow-sm rounded-pill px-3 py-2 bg-white mb-0">
+
+                <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                    <a class="page-link rounded-circle border-0 text-dark fw-bold"
+                       asp-action="Index"
+                       asp-route-page="@(ViewBag.CurrentPage - 1)"
+                       asp-route-searchString="@ViewBag.CurrentSearch"
+                       asp-route-statusFilter="@ViewBag.CurrentFilter">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
+
+                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                {
+                <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                    <a class="page-link rounded-circle border-0 @(i == ViewBag.CurrentPage ? "bg-dark text-white" : "text-dark fw-bold")"
+                       asp-action="Index"
+                       asp-route-page="@i"
+                       asp-route-searchString="@ViewBag.CurrentSearch"
+                       asp-route-statusFilter="@ViewBag.CurrentFilter">
+                        @i
+                    </a>
+                </li>
+                }
+
+                <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+                    <a class="page-link rounded-circle border-0 text-dark fw-bold"
+                       asp-action="Index"
+                       asp-route-page="@(ViewBag.CurrentPage + 1)"
+                       asp-route-searchString="@ViewBag.CurrentSearch"
+                       asp-route-statusFilter="@ViewBag.CurrentFilter">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+
+            </ul>
+        </nav>
+    </div>
+    }
+</div>
+
+<div class="modal fade" id="resetPassModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow">
+            <div class="modal-header bg-light border-bottom-0 rounded-top-4">
+                <h5 class="modal-title fw-bold text-primary"><i class="bi bi-key-fill me-2"></i> Cấp lại mật khẩu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="ResetUserPassword" method="post">
+                <div class="modal-body p-4">
+                    <p class="mb-3">Bạn đang cấp lại mật khẩu cho: <strong id="displayUserName" class="text-danger"></strong></p>
+
+                    <input type="hidden" id="modalUserId" name="userId" value="" />
+
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control rounded-3" id="newPassword" name="newPassword" placeholder="Mật khẩu mới" required minlength="6">
+                        <label for="newPassword">Nhập mật khẩu mới (VD: Admin@123)</label>
+                        <small class="text-muted">Mật khẩu cần có chữ hoa, chữ thường, số và ký tự đặc biệt.</small>
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0 bg-light rounded-bottom-4">
+                    <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">Lưu mật khẩu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    });
+
+    // Truyền dữ liệu User vào Modal khi bấm nút Đổi MK
+    let resetPassModal = document.getElementById('resetPassModal');
+    if (resetPassModal) {
+        resetPassModal.addEventListener('show.bs.modal', function (event) {
+            let button = event.relatedTarget;
+            let userId = button.getAttribute('data-userid');
+            let userName = button.getAttribute('data-username');
+
+            // Đẩy data vào form
+            resetPassModal.querySelector('#modalUserId').value = userId;
+            resetPassModal.querySelector('#displayUserName').textContent = userName;
+        });
+    }
+</script>
+}

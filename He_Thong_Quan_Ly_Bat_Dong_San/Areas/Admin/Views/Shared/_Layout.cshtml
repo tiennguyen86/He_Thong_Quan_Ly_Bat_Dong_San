@@ -43,24 +43,43 @@
 
 <div class="d-flex">
     <div class="sidebar d-flex flex-column" style="width: 260px;">
-        <a asp-area="" asp-controller="Home" asp-action="Index" class="text-decoration-none text-white d-flex align-items-center justify-content-center py-4 mb-3 border-bottom border-secondary">
+       <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="text-decoration-none text-white d-flex align-items-center justify-content-center py-4 mb-3 border-bottom border-secondary">
             <div class="bg-white text-dark rounded d-flex align-items-center justify-content-center me-2" style="width: 35px; height: 35px;">
-                <i class="bi bi-houses-fill fs-5"></i>
+                <i class="bi bi-bar-chart-fill fs-5 text-primary-custom"></i>
             </div>
             <span class="fs-4 fw-bold">LuxAdmin</span>
         </a>
 
         <ul class="nav flex-column mb-auto">
             <li class="nav-item">
-                <a asp-area="Admin" asp-controller="Properties" asp-action="Index" class="nav-link active">
+                <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="nav-link">
+                    <i class="bi bi-speedometer2"></i> Tổng quan 
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a asp-area="Admin" asp-controller="Properties" asp-action="Index" class="nav-link">
                     <i class="bi bi-building"></i> Quản lý Bất động sản
                 </a>
             </li>
-            <li class="nav-item">
-                <a asp-area="Admin" asp-controller="Categories" asp-action="Index" class="nav-link">
-                    <i class="bi bi-tags"></i> Quản lý Danh mục
-                </a>
-            </li>
+
+            @if (User.IsInRole("Admin"))
+            {
+                <li class="nav-item">
+                    <a asp-area="Admin" asp-controller="Categories" asp-action="Index" class="nav-link">
+                        <i class="bi bi-tags"></i> Quản lý Danh mục
+                    </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a asp-area="Admin" asp-controller="Users" asp-action="Index" class="nav-link">
+                        <i class="bi bi-people"></i> Quản lý Tài khoản
+                    </a>
+                </li>
+                
+                
+            }
+
             <li class="nav-item">
                 <a asp-area="Admin" asp-controller="Orders" asp-action="Index" class="nav-link">
                     <i class="bi bi-calendar-check"></i> Đơn Đặt lịch

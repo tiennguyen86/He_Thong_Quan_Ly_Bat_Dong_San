@@ -1,62 +1,74 @@
 @model He_Thong_Quan_Ly_Bat_Dong_San.Models.Order
 @using He_Thong_Quan_Ly_Bat_Dong_San.Helpers
 
-
 @{
     ViewData["Title"] = "Xác nhận yêu cầu đặt lịch";
-    // Lấy giỏ hàng ra để hiển thị cột bên phải
     var cart = Context.Session.Get<List<He_Thong_Quan_Ly_Bat_Dong_San.Models.CartItem>>("MyCart") ?? new List<He_Thong_Quan_Ly_Bat_Dong_San.Models.CartItem>();
 }
 
-<div class="container mt-5">
-    <h2 class="text-success mb-4"><i class="bi bi-calendar-check"></i> Xác nhận Đặt lịch xem nhà</h2>
+<style>
+    .form-control:focus {
+        border-color: #0d1b2a;
+        box-shadow: 0 0 0 0.25rem rgba(13, 27, 42, 0.1);
+    }
+</style>
 
-    <div class="row">
-        <div class="col-md-7">
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-white fw-bold">Thông tin liên hệ của bạn</div>
-                <div class="card-body">
-                    <form asp-action="Checkout" method="post">
-                        <div class="mb-3">
-                            <label asp-for="CustomerName" class="form-label">Họ và Tên <span class="text-danger">*</span></label>
-                            <input asp-for="CustomerName" class="form-control" placeholder="Ví dụ: Nguyễn Văn A" />
-                            <span asp-validation-for="CustomerName" class="text-danger"></span>
-                        </div>
+<div class="container mt-4 pt-3 mb-5">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-primary-custom"><i class="bi bi-calendar-check text-accent me-2"></i> Xác nhận Đặt lịch xem nhà</h2>
+        <p class="text-muted">Vui lòng để lại thông tin, chuyên viên LuxEstate sẽ liên hệ với bạn trong vòng 30 phút.</p>
+    </div>
 
-                        <div class="mb-3">
-                            <label asp-for="PhoneNumber" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
-                            <input asp-for="PhoneNumber" class="form-control" placeholder="09xxxxxxx" />
-                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-                        </div>
+    <div class="row g-5">
+        <div class="col-lg-7">
+            <div class="bg-white p-4 p-md-5 rounded-xl-custom shadow-soft">
+                <h5 class="fw-bold text-primary-custom mb-4 border-bottom pb-3">Thông tin liên hệ của bạn</h5>
+                <form asp-action="Checkout" method="post">
+                    <div class="mb-4">
+                        <label asp-for="CustomerName" class="form-label fw-medium text-dark">Họ và Tên <span class="text-danger">*</span></label>
+                        <input asp-for="CustomerName" class="form-control form-control-lg bg-light border-0 rounded-3" placeholder="Ví dụ: Nguyễn Văn A" />
+                        <span asp-validation-for="CustomerName" class="text-danger small mt-1 d-block"></span>
+                    </div>
 
-                        <div class="mb-3">
-                            <label asp-for="Notes" class="form-label">Ghi chú thêm (Thời gian rảnh, yêu cầu đặc biệt...)</label>
-                            <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
-                        </div>
+                    <div class="mb-4">
+                        <label asp-for="PhoneNumber" class="form-label fw-medium text-dark">Số điện thoại <span class="text-danger">*</span></label>
+                        <input asp-for="PhoneNumber" class="form-control form-control-lg bg-light border-0 rounded-3" placeholder="09xx xxx xxx" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger small mt-1 d-block"></span>
+                    </div>
 
-                        <button type="submit" class="btn btn-success btn-lg w-100">
-                            <i class="bi bi-send-check"></i> Hoàn tất Đặt lịch
-                        </button>
-                    </form>
-                </div>
+                    <div class="mb-5">
+                        <label asp-for="Notes" class="form-label fw-medium text-dark">Ghi chú thêm</label>
+                        <textarea asp-for="Notes" class="form-control bg-light border-0 rounded-3" rows="3" placeholder="Thời gian rảnh, yêu cầu đặc biệt..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn bg-accent text-white btn-lg w-100 fw-bold rounded-3 shadow-sm py-3">
+                        <i class="bi bi-send-check fs-5 me-2"></i> Hoàn tất Đặt lịch
+                    </button>
+                </form>
             </div>
         </div>
 
-        <div class="col-md-5">
-            <div class="card shadow-sm bg-light">
-                <div class="card-header fw-bold">Danh sách Bất động sản (@cart.Count căn)</div>
-                <ul class="list-group list-group-flush">
+        <div class="col-lg-5">
+            <div class="bg-light p-4 rounded-xl-custom border h-100">
+                <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                    <h5 class="fw-bold text-primary-custom mb-0">Danh sách chờ xem</h5>
+                    <span class="badge bg-primary-custom rounded-pill fs-6 px-3 py-2">@cart.Count căn</span>
+                </div>
+                
+                <div class="d-flex flex-column gap-3">
                     @foreach (var item in cart)
                     {
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center gap-3 bg-white p-3 rounded-3 shadow-sm">
+                            <img src="@(string.IsNullOrEmpty(item.ImageUrl) ? "/images/default-house.jpg" : item.ImageUrl)" 
+                                 onerror="this.src='https://placehold.co/60x60?text=IMG'"
+                                 style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;" />
                             <div>
-                                <h6 class="my-0">@item.Title</h6>
-                                <small class="text-muted">Giá: @item.Price.ToString("N0") VNĐ</small>
+                                <h6 class="fw-bold text-primary-custom mb-1" style="font-size: 0.95rem;">@item.Title</h6>
+                                <p class="text-accent fw-bold mb-0" style="font-size: 0.9rem;">@item.Price.ToString("N0") VNĐ</p>
                             </div>
-                            <img src="@item.ImageUrl" style="width: 50px; height: 40px; object-fit: cover;" class="rounded" />
-                        </li>
+                        </div>
                     }
-                </ul>
+                </div>
             </div>
         </div>
     </div>

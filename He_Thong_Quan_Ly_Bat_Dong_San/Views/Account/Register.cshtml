@@ -1,52 +1,139 @@
 @model He_Thong_Quan_Ly_Bat_Dong_San.ViewModels.RegisterVM
 
 @{
-    ViewData["Title"] = "Đăng ký tài khoản";
+ViewData["Title"] = "Đăng ký thành viên LuxEstate";
 }
 
-<div class="row justify-content-center mt-5">
-    <div class="col-md-5">
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-success text-white text-center py-3">
-                <h4 class="mb-0"><i class="bi bi-person-plus"></i> Đăng Ký Thành Viên</h4>
-            </div>
-            <div class="card-body p-4">
+<div class="row justify-content-center mt-5 mb-5 pt-3">
+    <div class="col-md-8 col-lg-5">
+        <div class="card border-0 shadow-soft rounded-xl-custom overflow-hidden">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <div class="bg-primary-custom text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow-sm" style="width: 70px; height: 70px;">
+                        <i class="bi bi-person-plus-fill fs-2"></i>
+                    </div>
+                    <h3 class="fw-bold text-primary-custom">Tạo tài khoản mới!</h3>
+                    <p class="text-muted small">Cập nhật những cơ hội đầu tư bất động sản tốt nhất sớm nhất.</p>
+                </div>
+
                 <form asp-action="Register" method="post">
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3 fw-bold"></div>
-                    
-                    <div class="mb-3">
-                        <label asp-for="FullName" class="form-label fw-bold">Họ và Tên</label>
-                        <input asp-for="FullName" class="form-control" placeholder="Nhập họ tên của bạn..." />
-                        <span asp-validation-for="FullName" class="text-danger form-text"></span>
+                    <div asp-validation-summary="ModelOnly" class="text-danger small mb-3 text-center fw-bold"></div>
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="FullName" class="form-control bg-light border-0 px-4" placeholder="Họ và tên" style="border-radius: 12px; height: 60px;" />
+                        <label asp-for="FullName" class="text-muted ms-2">Họ và tên</label>
+                        <span asp-validation-for="FullName" class="text-danger small ms-3"></span>
                     </div>
-                    
-                    <div class="mb-3">
-                        <label asp-for="Email" class="form-label fw-bold">Email đăng nhập</label>
-                        <input asp-for="Email" class="form-control" placeholder="name@example.com" />
-                        <span asp-validation-for="Email" class="text-danger form-text"></span>
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="Email" class="form-control bg-light border-0 px-4" placeholder="name@example.com" style="border-radius: 12px; height: 60px;" />
+                        <label asp-for="Email" class="text-muted ms-2">Địa chỉ Email</label>
+                        <span asp-validation-for="Email" class="text-danger small ms-3"></span>
                     </div>
-                    
-                    <div class="mb-3">
-                        <label asp-for="Password" class="form-label fw-bold">Mật khẩu</label>
-                        <input asp-for="Password" class="form-control" placeholder="Tối thiểu 6 ký tự" />
-                        <span asp-validation-for="Password" class="text-danger form-text"></span>
+
+                    <div class="position-relative mb-2">
+                        <div class="form-floating">
+                            <input asp-for="Password" id="passwordInput" class="form-control bg-light border-0 px-4" placeholder="Password" style="border-radius: 12px; height: 60px;" />
+                            <label asp-for="Password" class="text-muted ms-2">Mật khẩu</label>
+                        </div>
+                        <button type="button" class="btn position-absolute top-50 end-0 translate-middle-y me-2 text-muted toggle-password" data-target="passwordInput">
+                            <i class="bi bi-eye-slash"></i>
+                        </button>
                     </div>
-                    
-                    <div class="mb-4">
-                        <label asp-for="ConfirmPassword" class="form-label fw-bold">Xác nhận Mật khẩu</label>
-                        <input asp-for="ConfirmPassword" class="form-control" placeholder="Nhập lại mật khẩu" />
-                        <span asp-validation-for="ConfirmPassword" class="text-danger form-text"></span>
+
+                    <div class="progress mb-1" style="height: 5px; border-radius: 10px; display: none;" id="pwStrengthContainer">
+                        <div class="progress-bar" id="pwStrengthBar" role="progressbar" style="width: 0%;"></div>
                     </div>
-                    
-                    <button type="submit" class="btn btn-success w-100 py-2 fw-bold">
-                        Đăng ký ngay
+                    <p class="mb-3 ms-2 fw-medium" style="font-size: 0.75rem;" id="pwStrengthText"></p>
+                    <span asp-validation-for="Password" class="text-danger small ms-3 d-block mb-3 mt-n2"></span>
+
+                    <div class="position-relative mb-4">
+                        <div class="form-floating">
+                            <input asp-for="ConfirmPassword" id="confirmPasswordInput" class="form-control bg-light border-0 px-4" placeholder="Confirm Password" style="border-radius: 12px; height: 60px;" />
+                            <label asp-for="ConfirmPassword" class="text-muted ms-2">Xác nhận Mật khẩu</label>
+                        </div>
+                        <button type="button" class="btn position-absolute top-50 end-0 translate-middle-y me-2 text-muted toggle-password" data-target="confirmPasswordInput">
+                            <i class="bi bi-eye-slash"></i>
+                        </button>
+                        <span asp-validation-for="ConfirmPassword" class="text-danger small ms-3"></span>
+                    </div>
+
+                    <button class="btn bg-primary-custom text-white btn-lg w-100 fw-bold shadow-sm py-3" style="border-radius: 12px;" type="submit">
+                        <i class="bi bi-person-check fs-5 me-2"></i> Trở thành thành viên
                     </button>
                 </form>
+
+                <div class="text-center mt-4 pt-4 border-top">
+                    <p class="text-muted mb-0 small">Đã có tài khoản? <a asp-action="Login" class="text-accent fw-bold text-decoration-none">Đăng nhập ngay</a></p>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+<script>
+    // 1. Script cho nút Ẩn/Hiện mật khẩu
+    document.querySelectorAll('.toggle-password').forEach(button => {
+        button.addEventListener('click', function() {
+            const input = document.getElementById(this.getAttribute('data-target'));
+            const icon = this.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('bi-eye-slash', 'bi-eye');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('bi-eye', 'bi-eye-slash');
+            }
+        });
+    });
+
+    // 2. Script đo độ mạnh mật khẩu
+    const pwInput = document.getElementById('passwordInput');
+    const pwBar = document.getElementById('pwStrengthBar');
+    const pwText = document.getElementById('pwStrengthText');
+    const pwContainer = document.getElementById('pwStrengthContainer');
+
+    if (pwInput) {
+        pwInput.addEventListener('input', function() {
+            const val = this.value;
+            let strength = 0;
+
+            if (val.length > 0) {
+                pwContainer.style.display = 'flex';
+            } else {
+                pwContainer.style.display = 'none';
+                pwText.innerText = '';
+                return;
+            }
+
+            if (val.length >= 6) strength += 25;
+            if (val.match(/[A-Z]/)) strength += 25;
+            if (val.match(/[a-z]/)) strength += 25;
+            if (val.match(/[\d\W]/)) strength += 25;
+
+            pwBar.style.width = strength + '%';
+
+            if (strength <= 25) {
+                pwBar.className = 'progress-bar bg-danger';
+                pwText.innerText = 'Yếu (Cần thêm chữ hoa, số hoặc ký tự đặc biệt)';
+                pwText.className = 'text-danger mb-3 ms-2 fw-medium';
+            } else if (strength <= 50) {
+                pwBar.className = 'progress-bar bg-warning';
+                pwText.innerText = 'Trung bình (Nên thêm ký tự đặc biệt)';
+                pwText.className = 'text-warning mb-3 ms-2 fw-medium';
+            } else if (strength <= 75) {
+                pwBar.className = 'progress-bar bg-info';
+                pwText.innerText = 'Khá mạnh';
+                pwText.className = 'text-info mb-3 ms-2 fw-medium';
+            } else {
+                pwBar.className = 'progress-bar bg-success';
+                pwText.innerText = 'Rất mạnh!';
+                pwText.className = 'text-success mb-3 ms-2 fw-medium';
+            }
+        });
+    }
+</script>
 }

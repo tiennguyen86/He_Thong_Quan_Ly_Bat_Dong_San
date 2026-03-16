@@ -14,7 +14,7 @@ using He_Thong_Quan_Ly_Bat_Dong_San.Models;
 namespace He_Thong_Quan_Ly_Bat_Dong_San.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin, Sale")]
     public class PropertiesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -26,20 +26,42 @@ namespace He_Thong_Quan_Ly_Bat_Dong_San.Areas.Admin.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
-        // GET: Admin/Properties
-        public async Task<IActionResult> Index()
+        // =========================
+        // INDEX + PAGINATION
+        // =========================
+        public async Task<IActionResult> Index(int page = 1)
         {
-            var properties = _context.Properties.Include(p => p.Category);
-            return View(await properties.ToListAsync());
+            int pageSize = 5;
+
+            var propertiesQuery = _context.Properties
+                .Include(p => p.Category)
+                .AsQueryable();
+
+            int totalItems = await propertiesQuery.CountAsync();
+            int totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            var properties = await propertiesQuery
+                .OrderByDescending(p => p.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+
+            return View(properties);
         }
 
-        // GET: Admin/Properties/Details/5
+        // =========================
+        // DETAILS
+        // =========================
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
 
             var property = await _context.Properties
                 .Include(p => p.Category)
+                .Include(p => p.PropertyImages)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (property == null) return NotFound();
@@ -47,20 +69,22 @@ namespace He_Thong_Quan_Ly_Bat_Dong_San.Areas.Admin.Controllers
             return View(property);
         }
 
-        // GET: Admin/Properties/Create
+        // =========================
+        // CREATE
+        // =========================
         public IActionResult Create()
         {
             ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name");
             return View();
         }
 
-        // POST: Admin/Properties/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Property property)
         {
             if (ModelState.IsValid)
             {
+                // ===== UPLOAD ẢNH ĐẠI DIỆN =====
                 if (property.ImageUpload != null)
                 {
                     string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
@@ -68,7 +92,7 @@ namespace He_Thong_Quan_Ly_Bat_Dong_San.Areas.Admin.Controllers
                     if (!Directory.Exists(uploadsFolder))
                         Directory.CreateDirectory(uploadsFolder);
 
-                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + property.ImageUpload.FileName;
+                    string uniqueFileName = Guid.NewGuid() + "_" + property.ImageUpload.FileName;
                     string filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
                     using (var fileStream = new FileStream(filePath, FileMode.Create))
@@ -83,8 +107,43 @@ namespace He_Thong_Quan_Ly_Bat_Dong_San.Areas.Admin.Controllers
                     property.ImageUrl = "/images/default-property.jpg";
                 }
 
+                // ===== LƯU PROPERTY TRƯỚC =====
                 _context.Add(property);
                 await _context.SaveChangesAsync();
+
+
+                // ===== LƯU GALLERY ẢNH =====
+                if (property.GalleryUploads != null && property.GalleryUploads.Count > 0)
+                {
+                    var uploads = property.GalleryUploads.Take(5).ToList();
+
+                    string galleryFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", "gallery");
+
+                    if (!Directory.Exists(galleryFolder))
+                        Directory.CreateDirectory(galleryFolder);
+
+                    foreach (var file in uploads)
+                    {
+                        string uniqueFileName = Guid.NewGuid() + "_" + file.FileName;
+                        string filePath = Path.Combine(galleryFolder, uniqueFileName);
+
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await file.CopyToAsync(fileStream);
+                        }
+
+                        var propImage = new PropertyImage
+                        {
+                            PropertyId = property.Id,
+                            ImageUrl = "/uploads/gallery/" + uniqueFileName
+                        };
+
+                        _context.PropertyImages.Add(propImage);
+                    }
+
+                    await _context.SaveChangesAsync();
+                }
+
                 return RedirectToAction(nameof(Index));
             }
 
@@ -92,7 +151,9 @@ namespace He_Thong_Quan_Ly_Bat_Dong_San.Areas.Admin.Controllers
             return View(property);
         }
 
-        // GET: Admin/Properties/Edit/5
+        // =========================
+        // EDIT
+        // =========================
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -104,7 +165,6 @@ namespace He_Thong_Quan_Ly_Bat_Dong_San.Areas.Admin.Controllers
             return View(property);
         }
 
-        // POST: Admin/Properties/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Property property)
@@ -115,13 +175,15 @@ namespace He_Thong_Quan_Ly_Bat_Dong_San.Areas.Admin.Controllers
             {
                 try
                 {
-                    var existingProperty = await _context.Properties.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
+                    var existingProperty = await _context.Properties
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(p => p.Id == id);
 
                     if (property.ImageUpload != null)
                     {
                         string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
 
-                        string uniqueFileName = Guid.NewGuid().ToString() + "_" + property.ImageUpload.FileName;
+                        string uniqueFileName = Guid.NewGuid() + "_" + property.ImageUpload.FileName;
                         string filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
                         using (var fileStream = new FileStream(filePath, FileMode.Create))
@@ -131,10 +193,12 @@ namespace He_Thong_Quan_Ly_Bat_Dong_San.Areas.Admin.Controllers
 
                         property.ImageUrl = "/uploads/" + uniqueFileName;
 
-                        // xóa ảnh cũ
                         if (existingProperty.ImageUrl != null)
                         {
-                            string oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, existingProperty.ImageUrl.TrimStart('/'));
+                            string oldImagePath = Path.Combine(
+                                _webHostEnvironment.WebRootPath,
+                                existingProperty.ImageUrl.TrimStart('/')
+                            );
 
                             if (System.IO.File.Exists(oldImagePath))
                                 System.IO.File.Delete(oldImagePath);
@@ -163,7 +227,10 @@ namespace He_Thong_Quan_Ly_Bat_Dong_San.Areas.Admin.Controllers
             return View(property);
         }
 
-        // GET: Admin/Properties/Delete/5
+        // =========================
+        // DELETE
+        // =========================
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -177,7 +244,7 @@ namespace He_Thong_Quan_Ly_Bat_Dong_San.Areas.Admin.Controllers
             return View(property);
         }
 
-        // POST: Admin/Properties/Delete/5
+        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -188,7 +255,10 @@ namespace He_Thong_Quan_Ly_Bat_Dong_San.Areas.Admin.Controllers
             {
                 if (property.ImageUrl != null)
                 {
-                    string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, property.ImageUrl.TrimStart('/'));
+                    string imagePath = Path.Combine(
+                        _webHostEnvironment.WebRootPath,
+                        property.ImageUrl.TrimStart('/')
+                    );
 
                     if (System.IO.File.Exists(imagePath))
                         System.IO.File.Delete(imagePath);

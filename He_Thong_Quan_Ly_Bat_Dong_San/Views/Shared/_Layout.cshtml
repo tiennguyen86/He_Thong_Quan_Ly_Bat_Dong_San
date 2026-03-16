@@ -120,17 +120,29 @@
             <div class="col-md-2">
                 <h4>Liên kết</h4>
                 <ul class="list-unstyled">
-                    <li class="mb-2"><a href="#">Về chúng tôi</a></li>
-                    <li class="mb-2"><a href="#">Danh sách dự án</a></li>
-                    <li class="mb-2"><a href="#">Tin tức</a></li>
+                    <li class="mb-2">
+                        <a asp-area="" asp-controller="Home" asp-action="About">Về chúng tôi</a>
+                    </li>
+                    <li class="mb-2">
+                        <a asp-area="" asp-controller="Properties" asp-action="Index">Danh sách dự án</a>
+                    </li>
+                    <li class="mb-2">
+                        <a asp-area="" asp-controller="Home" asp-action="News">Tin tức</a>
+                    </li>
                 </ul>
             </div>
             <div class="col-md-3">
                 <h4>Chính sách</h4>
                 <ul class="list-unstyled">
-                    <li class="mb-2"><a href="#">Điều khoản dịch vụ</a></li>
-                    <li class="mb-2"><a asp-area="" asp-controller="Home" asp-action="Privacy" class="text-muted text-decoration-none">Chính sách bảo mật</a></li>
-                    <li class="mb-2"><a href="#">Giải quyết khiếu nại</a></li>
+                    <li class="mb-2">
+                        <a asp-area="" asp-controller="Home" asp-action="Terms">Điều khoản dịch vụ</a>
+                    </li>
+                    <li class="mb-2">
+                        <a asp-area="" asp-controller="Home" asp-action="Privacy">Chính sách bảo mật</a>
+                    </li>
+                    <li class="mb-2">
+                        <a asp-area="" asp-controller="Home" asp-action="Complaints">Giải quyết khiếu nại</a>
+                    </li>
                 </ul>
             </div>
             <div class="col-md-3">

@@ -14,5 +14,8 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
     public DbSet<Category> Categories { get; set; }
     public DbSet<Property> Properties { get; set; }
     public DbSet<Order> Orders { get; set; }
+    public DbSet<PropertyImage> PropertyImages { get; set; }
     public DbSet<OrderDetail> OrderDetails { get; set; }
+    
+    
 }

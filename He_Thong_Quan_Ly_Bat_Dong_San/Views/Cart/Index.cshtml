@@ -4,41 +4,59 @@
     ViewData["Title"] = "Danh sách chờ xem nhà";
 }
 
-<div class="container mt-5">
-    <h2 class="text-primary mb-4"><i class="bi bi-cart-check"></i> Danh sách Bất Động Sản bạn muốn xem</h2>
+<div class="container mt-4 pt-3 mb-5">
+    <div class="d-flex align-items-center mb-4">
+        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center text-primary-custom me-3" style="width: 50px; height: 50px;">
+            <i class="bi bi-cart-check fs-4"></i>
+        </div>
+        <h2 class="fw-bold text-primary-custom mb-0">Danh sách chờ xem nhà</h2>
+    </div>
 
     @if (!Model.Any())
     {
-        <div class="alert alert-warning text-center">
-            Bạn chưa chọn căn nhà nào. <br />
-            <a asp-controller="Home" asp-action="Index" class="btn btn-primary mt-3">Quay lại danh sách</a>
+        <div class="bg-white p-5 rounded-xl-custom shadow-soft text-center my-5">
+            <i class="bi bi-cart-x text-muted" style="font-size: 5rem;"></i>
+            <h4 class="mt-4 text-muted fw-bold">Giỏ hàng của bạn đang trống</h4>
+            <p class="text-secondary mb-4">Hãy lướt xem và chọn cho mình những căn nhà ưng ý nhất nhé!</p>
+            <a asp-controller="Home" asp-action="Index" class="btn bg-accent text-white px-5 py-2 fw-bold rounded-pill shadow-sm">
+                <i class="bi bi-house-door me-2"></i> Khám phá ngay
+            </a>
         </div>
     }
     else
     {
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <table class="table table-hover align-middle">
-                    <thead class="table-light">
+        <div class="bg-white rounded-xl-custom shadow-soft overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light text-muted" style="font-size: 0.9rem;">
                         <tr>
-                            <th>Hình ảnh</th>
-                            <th>Tên Bất Động Sản</th>
-                            <th>Giá (VNĐ)</th>
-                            <th class="text-center">Hành động</th>
+                            <th class="ps-4 py-3 fw-bold border-bottom-0">BẤT ĐỘNG SẢN</th>
+                            <th class="py-3 fw-bold border-bottom-0">GIÁ TRỊ</th>
+                            <th class="text-end pe-4 py-3 fw-bold border-bottom-0">THAO TÁC</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="border-top-0">
                         @foreach (var item in Model)
                         {
                             <tr>
-                                <td>
-                                    <img src="@item.ImageUrl" alt="@item.Title" style="width: 80px; height: 60px; object-fit: cover;" class="rounded" />
+                                <td class="ps-4 py-3">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <img src="@(string.IsNullOrEmpty(item.ImageUrl) ? "/images/default-house.jpg" : item.ImageUrl)" 
+                                             onerror="this.src='https://placehold.co/100x100?text=No+Image'"
+                                             alt="@item.Title" 
+                                             style="width: 80px; height: 80px; object-fit: cover; border-radius: 12px;" 
+                                             class="shadow-sm" />
+                                        <h6 class="fw-bold text-primary-custom mb-0" style="max-width: 300px;">@item.Title</h6>
+                                    </div>
                                 </td>
-                                <td class="fw-bold">@item.Title</td>
-                                <td class="text-danger fw-bold">@item.Price.ToString("N0")</td>
-                                <td class="text-center">
-                                    <a asp-controller="Cart" asp-action="RemoveFromCart" asp-route-id="@item.PropertyId" class="btn btn-outline-danger btn-sm">
-                                        <i class="bi bi-trash"></i> Xóa
+                                <td class="py-3">
+                                    <span class="fs-5 fw-bolder text-accent">@item.Price.ToString("N0") <small class="text-muted fs-6">VNĐ</small></span>
+                                </td>
+                                <td class="text-end pe-4 py-3">
+                                    <a asp-controller="Cart" asp-action="RemoveFromCart" asp-route-id="@item.PropertyId" 
+                                       class="btn btn-light text-danger rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                       style="width: 40px; height: 40px;" title="Xóa khỏi danh sách">
+                                        <i class="bi bi-trash3-fill"></i>
                                     </a>
                                 </td>
                             </tr>
@@ -46,13 +64,13 @@
                     </tbody>
                 </table>
             </div>
-            <div class="card-footer bg-white d-flex justify-content-between align-items-center p-3">
-                <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">
-                    <i class="bi bi-arrow-left"></i> Chọn thêm căn khác
+            <div class="bg-light p-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+                <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary fw-bold rounded-3 px-4 py-2">
+                    <i class="bi bi-arrow-left me-2"></i> Chọn thêm căn khác
                 </a>
                 
-                <a asp-controller="Cart" asp-action="Checkout" class="btn btn-success btn-lg px-5">
-                    Gửi yêu cầu đặt lịch <i class="bi bi-arrow-right"></i>
+                <a asp-controller="Cart" asp-action="Checkout" class="btn bg-accent text-white fw-bold btn-lg px-5 rounded-3 shadow-sm">
+                    Gửi yêu cầu đặt lịch <i class="bi bi-arrow-right ms-2"></i>
                 </a>
             </div>
         </div>

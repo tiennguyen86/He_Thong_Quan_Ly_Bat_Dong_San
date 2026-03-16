@@ -1,43 +1,234 @@
 @model He_Thong_Quan_Ly_Bat_Dong_San.Models.Property
 
 @{
-    ViewData["Title"] = "Chi tiết " + Model.Title;
+    ViewData["Title"] = Model.Title;
 }
 
-<div class="container mt-4">
-    <nav aria-label="breadcrumb" class="mb-4">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-action="Index" class="text-decoration-none">Trang chủ</a></li>
-            <li class="breadcrumb-item active" aria-current="page">@Model.Title</li>
+<style>
+    body { background-color: #f8f9fa; }
+
+    /* HIỆU ỨNG ANIMATION CỦA SẾP */
+    .animate-fade-up {
+        animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+
+    @@keyframes fadeInUp {
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* CAROUSEL HẠNG SANG */
+    .premium-carousel {
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+        position: relative;
+    }
+    .carousel-image {
+        height: 550px;
+        object-fit: cover;
+        width: 100%;
+        transition: transform 0.7s ease; /* Hiệu ứng hover ảnh của Sếp */
+    }
+    .premium-carousel:hover .carousel-image {
+        transform: scale(1.03);
+    }
+    .carousel-control-prev-icon, .carousel-control-next-icon {
+        background-color: rgba(0, 0, 0, 0.7);
+        border-radius: 50%;
+        padding: 24px;
+        background-size: 50%;
+    }
+
+    /* ICON BOX THÔNG TIN */
+    .feature-box {
+        background: #ffffff;
+        border: 1px solid #ebebeb;
+        border-radius: 16px;
+        padding: 20px;
+        transition: all 0.3s ease;
+    }
+    .feature-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        border-color: #0d1b2a;
+    }
+    .icon-wrapper {
+        width: 50px; height: 50px;
+        background: rgba(13, 27, 42, 0.05);
+        color: #0d1b2a;
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 12px;
+    }
+
+    /* STICKY CARD CHỐT ĐƠN */
+    .booking-card {
+        background: #ffffff;
+        border-radius: 20px;
+        border: 1px solid #e0e0e0;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+        position: sticky;
+        top: 100px;
+        padding: 32px;
+    }
+</style>
+
+<div class="container py-4 mb-5">
+
+    <nav aria-label="breadcrumb" class="animate-fade-up mb-4">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a asp-action="Index" class="text-decoration-none text-muted"><i class="bi bi-house-door"></i> Trang chủ</a></li>
+            <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-muted">@Model.Category?.Name</a></li>
+            <li class="breadcrumb-item active text-dark fw-medium truncate-1" aria-current="page">@Model.Title</li>
         </ol>
     </nav>
 
-    <div class="row">
-        <div class="col-md-7 mb-4">
-            <img src="@Model.ImageUrl" class="img-fluid rounded shadow-sm w-100" alt="@Model.Title" style="max-height: 500px; object-fit: cover;">
+    <div class="animate-fade-up delay-1 d-flex flex-column flex-lg-row justify-content-between align-items-lg-end mb-4 gap-3">
+        <div>
+            <span class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-pill fw-bold mb-3 d-inline-block">
+                <i class="bi bi-star-fill text-warning me-1"></i> Bất động sản nổi bật
+            </span>
+            <h1 class="fw-bolder text-dark mb-2" style="font-size: 2.5rem; letter-spacing: -0.5px;">@Model.Title</h1>
+            <p class="text-muted fs-5 mb-0">
+                <i class="bi bi-geo-alt-fill text-danger me-2"></i>@Model.Address
+            </p>
         </div>
-        
-        <div class="col-md-5">
-            <h2 class="text-primary mb-3">@Model.Title</h2>
-            <h3 class="text-danger fw-bold mb-4">@Model.Price.ToString("N0") VNĐ</h3>
+        <div class="d-flex gap-2">
+            <button class="btn btn-light border rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;" title="Chia sẻ">
+                <i class="bi bi-share fs-5 text-dark"></i>
+            </button>
+            <button class="btn btn-light border rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;" title="Yêu thích">
+                <i class="bi bi-heart fs-5 text-danger"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="animate-fade-up delay-2 premium-carousel mb-5 bg-dark">
+        <div id="propertyGallery" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "/images/default-house.jpg" : Model.ImageUrl)" 
+                         onerror="this.src='https://placehold.co/1200x600?text=LuxEstate'" 
+                         class="carousel-image" alt="Ảnh đại diện">
+                </div>
+                
+                @if (Model.PropertyImages != null && Model.PropertyImages.Any())
+                {
+                    foreach (var img in Model.PropertyImages)
+                    {
+                        <div class="carousel-item">
+                            <img src="@img.ImageUrl" class="carousel-image" alt="Ảnh chi tiết">
+                        </div>
+                    }
+                }
+            </div>
             
-            <div class="card border-0 bg-light mb-4 shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title border-bottom pb-2 mb-3"><i class="bi bi-info-circle"></i> Thông tin cơ bản</h5>
-                    <p class="mb-2 fs-5"><i class="bi bi-tag text-secondary"></i> <strong>Loại BĐS:</strong> @Model.Category?.Name</p>
-                    <p class="mb-2 fs-5"><i class="bi bi-arrows-fullscreen text-secondary"></i> <strong>Diện tích:</strong> @Model.Area m²</p>
-                    <p class="mb-0 fs-5"><i class="bi bi-geo-alt text-secondary"></i> <strong>Địa chỉ:</strong> @Model.Address</p>
+            @if (Model.PropertyImages != null && Model.PropertyImages.Any())
+            {
+                <button class="carousel-control-prev" type="button" data-bs-target="#propertyGallery" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon shadow" aria-hidden="true"></span>
+                    <span class="visually-hidden">Trước</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#propertyGallery" data-bs-slide="next">
+                    <span class="carousel-control-next-icon shadow" aria-hidden="true"></span>
+                    <span class="visually-hidden">Sau</span>
+                </button>
+            }
+        </div>
+    </div>
+
+    <div class="row g-5 animate-fade-up delay-3">
+        
+        <div class="col-lg-8">
+            <h4 class="fw-bold mb-4">Tổng quan</h4>
+            
+            <div class="row g-3 mb-5">
+                <div class="col-6 col-md-3">
+                    <div class="feature-box h-100 text-center">
+                        <div class="icon-wrapper mx-auto"><i class="bi bi-aspect-ratio"></i></div>
+                        <p class="text-muted small mb-1">Diện tích</p>
+                        <h5 class="fw-bold mb-0">@Model.Area m²</h5>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="feature-box h-100 text-center">
+                        <div class="icon-wrapper mx-auto"><i class="bi bi-building"></i></div>
+                        <p class="text-muted small mb-1">Loại hình</p>
+                        <h5 class="fw-bold mb-0">@Model.Category?.Name</h5>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="feature-box h-100 text-center">
+                        <div class="icon-wrapper mx-auto"><i class="bi bi-shield-check"></i></div>
+                        <p class="text-muted small mb-1">Pháp lý</p>
+                        <h5 class="fw-bold mb-0">Sổ hồng</h5>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="feature-box h-100 text-center">
+                        <div class="icon-wrapper mx-auto"><i class="bi bi-upc-scan"></i></div>
+                        <p class="text-muted small mb-1">Mã BĐS</p>
+                        <h5 class="fw-bold mb-0">#@Model.Id</h5>
+                    </div>
                 </div>
             </div>
-            
-            <div class="d-grid gap-3">
-                <a asp-controller="Cart" asp-action="AddToCart" asp-route-id="@Model.Id" class="btn btn-success btn-lg">
-                    <i class="bi bi-calendar-plus"></i> Đặt lịch xem ngay
-                </a>
-                <a asp-action="Index" class="btn btn-outline-secondary">
-                    <i class="bi bi-arrow-left"></i> Quay lại danh sách
-                </a>
+
+            <div class="bg-white p-4 p-md-5 rounded-4 border border-light-subtle shadow-sm mb-5">
+                <h4 class="fw-bold mb-4 pb-3 border-bottom">Mô tả chi tiết</h4>
+                <div class="text-secondary fs-5" style="line-height: 1.9; white-space: pre-line;">
+                    @Model.Description
+                </div>
             </div>
         </div>
+
+        <div class="col-lg-4">
+            <div class="booking-card">
+                <p class="text-muted fw-medium mb-1">Giá bán niêm yết</p>
+                <div class="mb-4">
+                    <span class="fw-bold text-danger" style="font-size: 2.2rem; letter-spacing: -1px;">
+                        @Model.Price.ToString("N0")
+                    </span>
+                    <span class="fs-4 text-dark fw-bold">VNĐ</span>
+                </div>
+
+                <div class="d-flex align-items-center p-3 bg-light rounded-3 mb-4 border">
+                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold me-3" style="width: 50px; height: 50px; font-size: 1.2rem;">
+                        <i class="bi bi-headset"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-1">LuxEstate Support</h6>
+                        <p class="text-muted small mb-0">Tư vấn viên 24/7</p>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-3">
+                    <a asp-controller="Cart" asp-action="AddToCart" asp-route-id="@Model.Id" class="btn btn-danger btn-lg fw-bold text-white shadow" style="padding: 16px;">
+                        <i class="bi bi-calendar-event me-2"></i> ĐẶT LỊCH XEM NHÀ
+                    </a>
+                    
+                    <a href="https://zalo.me/0327065175"
+                       target="_blank"
+                       class="btn btn-lg btn-outline-secondary fw-bold text-dark"
+                       style="padding:16px;">
+                        <i class="bi bi-chat-dots text-primary me-2"></i> Tư vấn nhanh
+                    </a>
+                </div>
+
+                <div class="mt-4 pt-4 border-top">
+                    <ul class="list-unstyled mb-0 d-flex flex-column gap-3 text-muted small">
+                        <li><i class="bi bi-check-circle-fill text-success fs-6 align-middle me-2"></i> Cam kết thông tin chính xác 100%</li>
+                        <li><i class="bi bi-check-circle-fill text-success fs-6 align-middle me-2"></i> Pháp lý rõ ràng, minh bạch</li>
+                        <li><i class="bi bi-check-circle-fill text-success fs-6 align-middle me-2"></i> Hỗ trợ vay vốn ngân hàng</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>

@@ -1,65 +1,92 @@
 @model IEnumerable<He_Thong_Quan_Ly_Bat_Dong_San.Models.Property>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Danh sách Bất Động Sản";
 }
 
-<h1>Index</h1>
+<div class="card card-custom p-4 mt-3 shadow-sm border-0 rounded-4 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <h4 class="fw-bold" style="color: #0d1b2a;"><i class="bi bi-list-task me-2"></i> @ViewData["Title"]</h4>
+        <a asp-action="Create" class="btn text-white fw-bold rounded-3 shadow-sm" style="background-color: #ff6b6b;">
+            <i class="bi bi-plus-lg"></i> Thêm BĐS mới
+        </a>
+    </div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Price)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Area)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Address)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ImageUrl)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Category)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Price)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Area)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Address)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ImageUrl)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Category.Name)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle text-nowrap">
+            <thead class="bg-light text-muted" style="font-size: 0.85rem;">
+            <tr>
+                <th class="py-3 ps-3">HÌNH ẢNH</th>
+                <th class="py-3">THÔNG TIN DỰ ÁN</th>
+                <th class="py-3">DANH MỤC</th>
+                <th class="py-3">GIÁ BÁN</th>
+                <th class="py-3 text-center">THAO TÁC</th>
+            </tr>
+            </thead>
+            <tbody class="border-top-0">
+            @foreach (var item in Model) {
+                <tr>
+                    <td class="ps-3">
+                        <img src="@(string.IsNullOrEmpty(item.ImageUrl) ? "/images/default-house.jpg" : item.ImageUrl)" 
+                             onerror="this.src='https://placehold.co/60x60?text=IMG'"
+                             class="rounded-3 shadow-sm object-fit-cover" style="width: 60px; height: 60px;" alt="img" />
+                    </td>
+                    <td>
+                        <h6 class="fw-bold mb-1" style="color: #0d1b2a; max-width: 300px; white-space: normal;">@item.Title</h6>
+                        <span class="text-muted small"><i class="bi bi-geo-alt"></i> @item.Address</span>
+                    </td>
+                    <td>
+                        <span class="badge bg-light text-dark border px-2 py-1">@Html.DisplayFor(modelItem => item.Category.Name)</span>
+                    </td>
+                    <td class="fw-bold text-danger">
+                        @item.Price.ToString("N0") VNĐ
+                    </td>
+                    <td class="text-center">
+                        <div class="btn-group shadow-sm">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary" title="Sửa"><i class="bi bi-pencil-square"></i></a>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info" title="Chi tiết"><i class="bi bi-eye"></i></a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" title="Xóa"><i class="bi bi-trash"></i></a>
+                        </div>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div> @if (ViewBag.TotalPages > 1)
+    {
+        <div class="mt-4 d-flex justify-content-end border-top pt-4">
+            <nav>
+                <ul class="pagination gap-2 shadow-sm rounded-pill px-3 py-2 bg-white mb-0">
+
+                    <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                        <a class="page-link rounded-circle border-0 text-dark fw-bold"
+                           asp-action="Index"
+                           asp-route-page="@(ViewBag.CurrentPage - 1)">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+
+                    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                            <a class="page-link rounded-circle border-0 @(i == ViewBag.CurrentPage ? "bg-dark text-white" : "text-dark fw-bold")"
+                               asp-action="Index"
+                               asp-route-page="@i">
+                                @i
+                            </a>
+                        </li>
+                    }
+
+                    <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+                        <a class="page-link rounded-circle border-0 text-dark fw-bold"
+                           asp-action="Index"
+                           asp-route-page="@(ViewBag.CurrentPage + 1)">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+
+                </ul>
+            </nav>
+        </div>
+    }
+</div>

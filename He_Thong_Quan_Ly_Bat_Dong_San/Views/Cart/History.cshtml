@@ -1,0 +1,62 @@
+@model IEnumerable<He_Thong_Quan_Ly_Bat_Dong_San.Models.Order>
+
+@{
+    ViewData["Title"] = "Lịch sử đặt lịch";
+}
+
+<div class="container mt-4 pt-3 mb-5">
+    <div class="d-flex align-items-center mb-4 border-bottom pb-3">
+        <div class="bg-primary-custom rounded text-white d-flex align-items-center justify-content-center me-3 shadow-sm" style="width: 45px; height: 45px;">
+            <i class="bi bi-clock-history fs-5"></i>
+        </div>
+        <h2 class="fw-bold text-primary-custom mb-0">Lịch sử đặt lịch của bạn</h2>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="bg-white p-5 rounded-xl-custom shadow-soft text-center my-5">
+            <i class="bi bi-journal-x text-muted" style="font-size: 4rem;"></i>
+            <h5 class="mt-4 text-muted fw-bold">Bạn chưa có lịch hẹn nào</h5>
+            <p class="text-secondary mb-4">Hãy lướt xem danh sách bất động sản và chọn cho mình một căn ưng ý nhé.</p>
+            <a asp-controller="Home" asp-action="Index" class="btn bg-accent text-white px-4 py-2 fw-bold rounded-pill">
+                Xem nhà ngay
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="bg-white rounded-xl-custom shadow-soft overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light text-muted" style="font-size: 0.9rem;">
+                        <tr>
+                            <th class="ps-4 py-3 fw-bold border-bottom-0">MÃ ĐƠN</th>
+                            <th class="py-3 fw-bold border-bottom-0">NGƯỜI ĐẶT</th>
+                            <th class="py-3 fw-bold border-bottom-0">SỐ ĐIỆN THOẠI</th>
+                            <th class="py-3 fw-bold border-bottom-0 text-center">TRẠNG THÁI</th>
+                            <th class="text-end pe-4 py-3 fw-bold border-bottom-0">GHI CHÚ</th>
+                        </tr>
+                    </thead>
+                    <tbody class="border-top-0">
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="ps-4 py-3 fw-bold text-primary-custom">#@item.Id</td>
+                                <td class="py-3 fw-medium">@item.CustomerName</td>
+                                <td class="py-3">@item.PhoneNumber</td>
+                                <td class="py-3 text-center">
+                                    <span class="badge bg-warning text-dark rounded-pill px-3 py-2 shadow-sm">
+                                        <i class="bi bi-hourglass-split"></i> Đang chờ duyệt
+                                    </span>
+                                </td>
+                                <td class="text-end pe-4 py-3 text-muted small" style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    @(string.IsNullOrEmpty(item.Notes) ? "Không có" : item.Notes)
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

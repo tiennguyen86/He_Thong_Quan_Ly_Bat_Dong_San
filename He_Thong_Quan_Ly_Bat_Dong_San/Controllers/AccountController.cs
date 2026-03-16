@@ -20,14 +20,12 @@ namespace He_Thong_Quan_Ly_Bat_Dong_San.Controllers
         // REGISTER
         // =========================
 
-        // Hiển thị form đăng ký
         [HttpGet]
         public IActionResult Register()
         {
             return View();
         }
 
-        // Xử lý đăng ký
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterVM model)
@@ -38,21 +36,18 @@ namespace He_Thong_Quan_Ly_Bat_Dong_San.Controllers
                 {
                     UserName = model.Email,
                     Email = model.Email,
-                    FullName = model.FullName
+                    FullName = model.FullName,
+                    IsActive = true // 👈 CHỮA BỆNH 1: Cấp quyền hoạt động ngay khi sinh ra
                 };
 
-                // Create user (password được hash tự động)
                 var result = await _userManager.CreateAsync(user, model.Password);
 
                 if (result.Succeeded)
                 {
-                    // Đăng ký xong đăng nhập luôn
                     await _signInManager.SignInAsync(user, isPersistent: false);
-
                     return RedirectToAction("Index", "Home");
                 }
 
-                // Nếu lỗi (email trùng, password yếu...)
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError("", error.Description);
@@ -66,7 +61,6 @@ namespace He_Thong_Quan_Ly_Bat_Dong_San.Controllers
         // LOGIN
         // =========================
 
-        // Hiển thị form login
         [HttpGet]
         public IActionResult Login(string? returnUrl = null)
         {
@@ -74,7 +68,6 @@ namespace He_Thong_Quan_Ly_Bat_Dong_San.Controllers
             return View();
         }
 
-        // Xử lý login
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginVM model, string? returnUrl = null)
@@ -83,8 +76,19 @@ namespace He_Thong_Quan_Ly_Bat_Dong_San.Controllers
 
             if (ModelState.IsValid)
             {
+                // Tìm user theo email
+                var user = await _userManager.FindByEmailAsync(model.Email);
+
+                // Nếu không tồn tại hoặc bị khóa
+                if (user == null || !user.IsActive)
+                {
+                    ModelState.AddModelError("", "Tài khoản không tồn tại hoặc đã bị khóa.");
+                    return View(model);
+                }
+
+                // Kiểm tra mật khẩu
                 var result = await _signInManager.PasswordSignInAsync(
-                    model.Email,
+                    user.UserName,
                     model.Password,
                     model.RememberMe,
                     lockoutOnFailure: false
@@ -92,7 +96,6 @@ namespace He_Thong_Quan_Ly_Bat_Dong_San.Controllers
 
                 if (result.Succeeded)
                 {
-                    // Nếu có returnUrl thì quay lại trang trước
                     if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                     {
                         return LocalRedirect(returnUrl);
@@ -116,7 +119,6 @@ namespace He_Thong_Quan_Ly_Bat_Dong_San.Controllers
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-
             return RedirectToAction("Index", "Home");
         }
 
