@@ -1,30 +1,70 @@
 @model He_Thong_Quan_Ly_Bat_Dong_San.Models.Category
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Chi tiết Danh mục";
 }
 
-<h1>Details</h1>
+<div class="card border-0 shadow-sm rounded-4 mb-5" style="background-color: #ffffff;">
+    
+    <div class="card-header bg-transparent border-bottom-0 pt-4 pb-0 px-4 px-md-5 d-flex justify-content-between align-items-center">
+        <h4 class="fw-bolder mb-0 d-flex align-items-center gap-2" style="color: #0d1b2a;">
+            <span class="d-flex align-items-center justify-content-center rounded-3 shadow-sm" style="width: 40px; height: 40px; background-color: #ff6b6b; color: white;">
+                <i class="bi bi-tags-fill fs-5"></i>
+            </span>
+            @ViewData["Title"]
+        </h4>
+        <a asp-action="Index" class="btn btn-light fw-bold text-muted border-0 shadow-sm rounded-pill px-4 transition-all">
+            <i class="bi bi-arrow-left me-1"></i> Quay lại
+        </a>
+    </div>
 
-<div>
-    <h4>Category</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-    </dl>
+    <div class="card-body p-4 p-md-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-9">
+                <div class="bg-light rounded-4 p-4 p-md-5 shadow-sm border border-white position-relative overflow-hidden">
+                    
+                    <div class="position-absolute opacity-10" style="top: -20px; right: -20px;">
+                        <i class="bi bi-tag-fill" style="font-size: 12rem; color: #0d1b2a;"></i>
+                    </div>
+                    
+                    <div class="position-relative z-1">
+                        <div class="mb-4">
+                            <label class="text-uppercase fw-bold text-muted mb-2" style="font-size: 0.75rem; letter-spacing: 1.5px;">Tên danh mục</label>
+                            <h2 class="fw-black mb-0" style="color: #0d1b2a; font-weight: 800;">@Model.Name</h2>
+                        </div>
+                        
+                        <hr class="border-secondary opacity-10 my-4">
+                        
+                        <div>
+                            <label class="text-uppercase fw-bold text-muted mb-2" style="font-size: 0.75rem; letter-spacing: 1.5px;">Mô tả chi tiết</label>
+                            <p class="mb-0" style="line-height: 1.8; font-size: 1.05rem; color: #475569;">
+                                @if (string.IsNullOrEmpty(Model.Description))
+                                {
+                                    <span class="fst-italic text-black-50">Chưa có thông tin mô tả cho danh mục này.</span>
+                                }
+                                else
+                                {
+                                    @Model.Description
+                                }
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-5 text-center">
+                    <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn text-white fw-bold px-5 py-3 rounded-pill shadow transition-all" style="background-color: #ff6b6b; letter-spacing: 0.5px;">
+                        <i class="bi bi-pencil-square me-2"></i> Chỉnh sửa danh mục
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+<style>
+    /* Hiệu ứng nhỏ cho nút bấm khi hover */
+    .btn.transition-all:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    }
+</style>

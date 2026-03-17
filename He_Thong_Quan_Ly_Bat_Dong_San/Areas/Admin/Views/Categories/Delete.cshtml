@@ -1,33 +1,86 @@
 @model He_Thong_Quan_Ly_Bat_Dong_San.Models.Category
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Xóa Danh mục";
 }
 
-<h1>Delete</h1>
-
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>Category</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-    </dl>
+<div class="card border-0 shadow-sm rounded-4 mb-5" style="background-color: #ffffff;">
     
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
+    <div class="card-header bg-transparent border-bottom-0 pt-4 pb-0 px-4 px-md-5 d-flex justify-content-between align-items-center">
+        <h4 class="fw-bolder mb-0 d-flex align-items-center gap-2" style="color: #0d1b2a;">
+            <span class="d-flex align-items-center justify-content-center rounded-3 shadow-sm" style="width: 40px; height: 40px; background-color: #dc3545; color: white;">
+                <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+            </span>
+            @ViewData["Title"]
+        </h4>
+        <a asp-action="Index" class="btn btn-light fw-bold text-muted border-0 shadow-sm rounded-pill px-4 transition-all">
+            <i class="bi bi-arrow-left me-1"></i> Quay lại
+        </a>
+    </div>
+
+    <div class="card-body p-4 p-md-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-9">
+                
+                <div class="alert alert-danger rounded-4 border-0 shadow-sm d-flex align-items-center mb-4 p-4" role="alert">
+                    <i class="bi bi-exclamation-octagon-fill fs-2 me-3"></i>
+                    <div>
+                        <h5 class="alert-heading fw-bold mb-1">Cảnh báo hành động!</h5>
+                        <p class="mb-0" style="font-size: 0.95rem;">Sếp có chắc chắn muốn xóa danh mục này không? Các dữ liệu liên quan có thể bị ảnh hưởng và hành động này <strong>không thể hoàn tác</strong>.</p>
+                    </div>
+                </div>
+
+                <div class="bg-light rounded-4 p-4 p-md-5 shadow-sm border border-white position-relative overflow-hidden mb-5">
+                    
+                    <div class="position-absolute opacity-10" style="top: -20px; right: -20px;">
+                        <i class="bi bi-trash3-fill" style="font-size: 12rem; color: #dc3545;"></i>
+                    </div>
+                    
+                    <div class="position-relative z-1">
+                        <div class="mb-4">
+                            <label class="text-uppercase fw-bold text-muted mb-2" style="font-size: 0.75rem; letter-spacing: 1.5px;">Tên danh mục</label>
+                            <h2 class="fw-black mb-0" style="color: #0d1b2a; font-weight: 800;">@Model.Name</h2>
+                        </div>
+                        
+                        <hr class="border-secondary opacity-10 my-4">
+                        
+                        <div>
+                            <label class="text-uppercase fw-bold text-muted mb-2" style="font-size: 0.75rem; letter-spacing: 1.5px;">Mô tả chi tiết</label>
+                            <p class="mb-0" style="line-height: 1.8; font-size: 1.05rem; color: #475569;">
+                                @if (string.IsNullOrEmpty(Model.Description))
+                                {
+                                    <span class="fst-italic text-black-50">Chưa có thông tin mô tả cho danh mục này.</span>
+                                }
+                                else
+                                {
+                                    @Model.Description
+                                }
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <form asp-action="Delete">
+                        <input type="hidden" asp-for="Id" />
+                        
+                        <button type="submit" class="btn text-white fw-bold px-5 py-3 rounded-pill shadow transition-all me-2 mb-2 mb-md-0" style="background-color: #dc3545; letter-spacing: 0.5px;">
+                            <i class="bi bi-trash3-fill me-2"></i> Xác nhận Xóa vĩnh viễn
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary fw-bold px-5 py-3 rounded-pill transition-all mb-2 mb-md-0">
+                            Hủy bỏ
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<style>
+    /* Hiệu ứng nhỏ cho nút bấm khi hover */
+    .btn.transition-all:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    }
+</style>
