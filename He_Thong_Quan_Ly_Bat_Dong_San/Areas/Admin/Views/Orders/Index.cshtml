@@ -7,7 +7,7 @@
 <div class="card card-custom p-4 shadow-sm border-0 rounded-4 mt-3">
     <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
         <h4 class="fw-bold" style="color: #0d1b2a;"><i class="bi bi-calendar-check me-2"></i> @ViewData["Title"]</h4>
-        <span class="badge bg-primary rounded-pill fs-6 px-3 py-2">Tổng: @Model.Count() đơn</span>
+        <span class="badge bg-primary rounded-pill fs-6 px-3 py-2">Tổng: @ViewBag.TotalItems đơn</span>
     </div>
 
     @if (!Model.Any())
@@ -75,5 +75,36 @@
                 </tbody>
             </table>
         </div>
+
+        @if (ViewBag.TotalPages > 1)
+        {
+            <div class="d-flex justify-content-end mt-4">
+                <div class="d-inline-flex align-items-center bg-white rounded-pill px-3 py-2 shadow-sm border">
+                    
+                    <a href="@Url.Action("Index", new { page = ViewBag.CurrentPage - 1 })" 
+                       class="text-dark text-decoration-none px-2 @(ViewBag.CurrentPage == 1 ? "disabled text-muted pe-none" : "")">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+
+                    <div class="d-flex align-items-center gap-2 mx-2">
+                        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                        {
+                            <a href="@Url.Action("Index", new { page = i })" 
+                               class="d-flex align-items-center justify-content-center text-decoration-none rounded-circle fw-bold 
+                                      @(i == ViewBag.CurrentPage ? "bg-dark text-white" : "bg-transparent text-dark hover-bg-light")"
+                               style="width: 32px; height: 32px; transition: 0.2s;">
+                                @i
+                            </a>
+                        }
+                    </div>
+
+                    <a href="@Url.Action("Index", new { page = ViewBag.CurrentPage + 1 })" 
+                       class="text-dark text-decoration-none px-2 @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled text-muted pe-none" : "")">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+
+                </div>
+            </div>
+        }
     }
 </div>

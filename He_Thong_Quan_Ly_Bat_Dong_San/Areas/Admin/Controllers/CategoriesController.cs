@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace He_Thong_Quan_Ly_Bat_Dong_San.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = "Admin")] // <--- THÊM DÒNG NÀY (Bức tường thép)
+    [Authorize(Roles = "Admin")] // <--- (Bức tường thép)
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext _context;

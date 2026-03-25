@@ -22,11 +22,36 @@ namespace He_Thong_Quan_Ly_Bat_Dong_San.Areas.Admin.Controllers
             _context = context;
         }
 
+        // Phân trang
         // GET: Admin/Orders
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1)
         {
-            var applicationDbContext = _context.Orders.Include(o => o.AppUser);
-            return View(await applicationDbContext.ToListAsync());
+            int pageSize = 6; // Số lượng đơn hàng hiển thị trên 1 trang
+
+            // Đếm tổng số đơn hàng có trong DB
+            int totalItems = await _context.Orders.CountAsync();
+            
+            // Tính tổng số trang (làm tròn lên)
+            int totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            // Chặn lỗi: Nếu nhập trang < 1 thì đưa về trang 1, nếu lớn hơn tổng số trang thì đưa về trang cuối
+            if (page < 1) page = 1;
+            if (page > totalPages && totalPages > 0) page = totalPages;
+
+            // Truy vấn lấy dữ liệu có Skip và Take
+            var orders = await _context.Orders
+                .Include(o => o.AppUser)
+                .OrderByDescending(o => o.OrderDate) // Sắp xếp đơn mới nhất lên đầu
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            // Ném dữ liệu phân trang sang View
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.TotalItems = totalItems;
+
+            return View(orders);
         }
 
         // GET: Admin/Orders/Details/5
@@ -56,8 +81,6 @@ namespace He_Thong_Quan_Ly_Bat_Dong_San.Areas.Admin.Controllers
         }
 
         // POST: Admin/Orders/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,AppUserId,CustomerName,PhoneNumber,OrderDate,Notes,Status")] Order order)
@@ -90,8 +113,6 @@ namespace He_Thong_Quan_Ly_Bat_Dong_San.Areas.Admin.Controllers
         }
 
         // POST: Admin/Orders/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,AppUserId,CustomerName,PhoneNumber,OrderDate,Notes,Status")] Order order)
@@ -124,7 +145,6 @@ namespace He_Thong_Quan_Ly_Bat_Dong_San.Areas.Admin.Controllers
             ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", order.AppUserId);
             return View(order);
         }
-        
         
         [Authorize(Roles = "Admin")] // THÊM DÒNG NÀY ĐỂ CHỈ SẾP MỚI ĐƯỢC VÀO
         // GET: Admin/Orders/Delete/5

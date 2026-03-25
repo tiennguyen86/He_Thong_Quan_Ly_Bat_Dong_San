@@ -1,54 +1,51 @@
 @model He_Thong_Quan_Ly_Bat_Dong_San.Models.Order
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Chi tiết Đơn đặt lịch";
+    // Dòng này cực quan trọng để gọi cái menu bên trái của Sếp vào:
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml"; 
 }
 
-<h1>Details</h1>
-
-<div>
-    <h4>Order</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AppUser)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AppUser.Id)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CustomerName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CustomerName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PhoneNumber)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PhoneNumber)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.OrderDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.OrderDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Notes)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Notes)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+<div class="card shadow mb-4">
+    <div class="card-header py-3 bg-primary">
+        <h6 class="m-0 font-weight-bold text-white">Chi Tiết Đơn Đặt Lịch #@Model.Id</h6>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered table-striped table-hover">
+            <tbody>
+                <tr>
+                    <th style="width: 250px;">Tên Khách Hàng</th>
+                    <td class="text-primary"><strong>@Html.DisplayFor(model => model.CustomerName)</strong></td>
+                </tr>
+                <tr>
+                    <th>Số Điện Thoại</th>
+                    <td><strong>@Html.DisplayFor(model => model.PhoneNumber)</strong></td>
+                </tr>
+                <tr>
+                    <th>Thời gian đặt</th>
+                    <td>@Html.DisplayFor(model => model.OrderDate)</td>
+                </tr>
+                <tr>
+                    <th>Ghi chú của khách</th>
+                    <td><i>@Html.DisplayFor(model => model.Notes)</i></td>
+                </tr>
+                <tr>
+                    <th>Trạng thái</th>
+                    <td>
+                        <span class="badge bg-info text-dark" style="font-size: 14px; padding: 8px;">
+                            @Html.DisplayFor(model => model.Status)
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Mã Tài Khoản (AppUser)</th>
+                    <td><code class="text-muted">@Html.DisplayFor(model => model.AppUser.Id)</code></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer text-center">
+        <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-warning px-4"><i class="fas fa-edit"></i> Chỉnh sửa</a>
+        <a asp-action="Index" class="btn btn-secondary px-4"><i class="fas fa-arrow-left"></i> Quay lại danh sách</a>
+    </div>
 </div>
