@@ -2,10 +2,19 @@ using Microsoft.AspNetCore.Identity;
 
 namespace He_Thong_Quan_Ly_Bat_Dong_San.Models;
 
+/// <summary>
+/// Model mở rộng IdentityUser để lưu thêm thông tin người dùng tùy chỉnh
+/// </summary>
 public class AppUser : IdentityUser
 {
-    // Bạn có thể thêm các trường tùy ý ở đây
+    /// <summary>
+    /// Họ và tên của người dùng
+    /// </summary>
     public string? FullName { get; set; }
-    // THÊM DÒNG NÀY: 1 (true) là Hoạt động, 0 (false) là Đã xóa/Khóa
+
+    /// <summary>
+    /// Trạng thái tài khoản: true = Hoạt động, false = Bị khóa/Xóa
+    /// Dùng để quản lý quyền truy cập mà không xóa tài khoản khỏi database
+    /// </summary>
     public bool IsActive { get; set; } = true;
 }

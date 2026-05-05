@@ -5,6 +5,23 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace He_Thong_Quan_Ly_Bat_Dong_San.Migrations
 {
+    /// <summary>
+    /// Migration lần 2: Thêm hệ thống xác thực & phân quyền (Identity)
+    /// Ngày: 05/03/2026
+    /// 
+    /// Tạo các bảng ASP.NET Identity:
+    /// - AspNetUsers: Người dùng (mở rộng từ IdentityUser)
+    /// - AspNetRoles: Chức vụ/Role (Admin, Sale, User)
+    /// - AspNetUserRoles: Liên kết User-Role (Many-to-Many)
+    /// - AspNetUserClaims: Claims cho mỗi user
+    /// - AspNetRoleClaims: Claims cho mỗi role
+    /// - AspNetUserLogins: Đăng nhập bên ngoài (Google, Facebook,...)
+    /// - AspNetUserTokens: Token reset mật khẩu, xác nhận email
+    /// 
+    /// Bổ sung:
+    /// - Thêm FullName vào AspNetUsers (tùy chỉnh)
+    /// - Tạo các Index cho tìm kiếm nhanh
+    /// </summary>
     /// <inheritdoc />
     public partial class AddIdentity : Migration
     {

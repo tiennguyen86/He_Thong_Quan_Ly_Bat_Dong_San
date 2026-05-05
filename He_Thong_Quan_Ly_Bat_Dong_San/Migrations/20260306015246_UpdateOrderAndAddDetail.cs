@@ -4,6 +4,24 @@
 
 namespace He_Thong_Quan_Ly_Bat_Dong_San.Migrations
 {
+    /// <summary>
+    /// Migration lần 3: Cập nhật Order và tạo OrderDetail
+    /// Ngày: 06/03/2026
+    /// 
+    /// Thay đổi bảng Orders:
+    /// - Thêm AppUserId (FK) → Liên kết với user đã đăng nhập
+    /// - Thêm Status → Trạng thái đơn (Chờ xác nhận, Đã liên hệ, Hủy,...)
+    /// 
+    /// Tạo bảng OrderDetails (chi tiết đơn lịch hẹn):
+    /// - Lưu từng BĐS cụ thể trong một đơn hàng
+    /// - OrderId (FK) → Order
+    /// - PropertyId (FK) → Property
+    /// - Price → Giá lúc đặt (để giữ lịch sử giá)
+    /// 
+    /// Mối quan hệ:
+    /// - Order 1 -* OrderDetails (1 đơn có nhiều chi tiết)
+    /// - OrderDetails * -1 Property (Many-to-One)
+    /// </summary>
     /// <inheritdoc />
     public partial class UpdateOrderAndAddDetail : Migration
     {

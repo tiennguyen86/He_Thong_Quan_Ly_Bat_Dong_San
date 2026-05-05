@@ -5,6 +5,17 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace He_Thong_Quan_Ly_Bat_Dong_San.Migrations
 {
+    /// <summary>
+    /// Migration lần đầu: Tạo các bảng cơ bản
+    /// Ngày: 05/03/2026
+    /// 
+    /// Tạo 3 bảng chính:
+    /// - Categories: Danh mục BĐS
+    /// - Orders: Đơn lịch hẹn
+    /// - Properties: Bất động sản
+    /// 
+    /// Mối quan hệ: Properties → Categories (Many-to-One)
+    /// </summary>
     /// <inheritdoc />
     public partial class InitialCreate : Migration
     {

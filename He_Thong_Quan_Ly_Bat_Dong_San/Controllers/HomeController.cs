@@ -7,113 +7,144 @@ using Microsoft.AspNetCore.Identity;
 
 namespace He_Thong_Quan_Ly_Bat_Dong_San.Controllers;
 
+/// <summary>
+/// Controller trang chủ ứng dụng
+/// Xử lý hiển thị danh sách BĐS, tìm kiếm, lọc theo danh mục, sắp xếp giá, phân trang
+/// </summary>
 public class HomeController : Controller
 {
     private readonly ApplicationDbContext _context;
 
-    // Nhúng ApplicationDbContext vào
     public HomeController(ApplicationDbContext context)
     {
         _context = context;
     }
 
-    // Thêm tham số categoryId
-    // Thêm tham số searchString
-    // Thêm tham số sortOrder
-    // Thêm tham số page
+    /// <summary>
+    /// GET: Home/Index
+    /// Hiển thị danh sách bất động sản với các tính năng: tìm kiếm, lọc, sắp xếp, phân trang
+    /// </summary>
+    /// <param name="categoryId">Mã danh mục để lọc (tùy chọn)</param>
+    /// <param name="searchString">Từ khóa tìm kiếm trong tiêu đề hoặc địa chỉ (tùy chọn)</param>
+    /// <param name="sortOrder">Thứ tự sắp xếp: price_asc, price_desc (tùy chọn)</param>
+    /// <param name="page">Số trang hiện tại (mặc định: 1)</param>
+    /// <returns>View danh sách BĐS đã lọc, sắp xếp và phân trang</returns>
     public async Task<IActionResult> Index(int? categoryId, string? searchString, string? sortOrder, int page = 1)
     {
-        int pageSize = 6; // Hiển thị 6 căn nhà trên 1 trang
+        int pageSize = 6; // Hiển thị 6 BĐS trên 1 trang
 
+        // Khởi tạo query cơ bản: Lấy tất cả BĐS, include danh mục, không track để tối ưu performance
         var propertiesQuery = _context.Properties
             .Include(p => p.Category)
-            .AsNoTracking() // ⚡ Tăng tốc khi chỉ đọc dữ liệu
+            .AsNoTracking()                       // ⚡ Tối ưu hóa: Chỉ đọc, không update
             .AsQueryable();
 
-        // 1. Lọc theo tìm kiếm
+        // ====== BƯỚC 1: TÌM KIẾM ======
         if (!string.IsNullOrEmpty(searchString))
         {
+            // Tìm kiếm trong tiêu đề hoặc địa chỉ (không phân biệt hoa/thường)
             propertiesQuery = propertiesQuery.Where(p =>
                 p.Title.Contains(searchString) ||
                 p.Address.Contains(searchString));
 
+            // Lưu từ khóa tìm kiếm để hiển thị lại trong view
             ViewBag.CurrentSearch = searchString;
         }
 
-        // 2. Lọc theo danh mục
+        // ====== BƯỚC 2: LỌC THEO DANH MỤC ======
         if (categoryId.HasValue)
         {
+            // Lọc BĐS theo danh mục
             propertiesQuery = propertiesQuery.Where(p => p.CategoryId == categoryId);
 
+            // Lấy tên danh mục để hiển thị
             var category = await _context.Categories.FindAsync(categoryId);
 
             ViewBag.CurrentCategory = category?.Name;
             ViewBag.CurrentCategoryId = categoryId;
         }
 
-        // 3. Sắp xếp dữ liệu
+        // ====== BƯỚC 3: SẮP XẾP ======
         switch (sortOrder)
         {
-            case "price_asc": // Giá thấp -> cao
+            case "price_asc":           // Giá thấp → cao
                 propertiesQuery = propertiesQuery.OrderBy(p => p.Price);
                 break;
 
-            case "price_desc": // Giá cao -> thấp
+            case "price_desc":          // Giá cao → thấp
                 propertiesQuery = propertiesQuery.OrderByDescending(p => p.Price);
                 break;
 
-            default: // Mặc định: Mới nhất
+            default:                    // Mặc định: Mới nhất (ID cao nhất)
                 propertiesQuery = propertiesQuery.OrderByDescending(p => p.Id);
                 break;
         }
 
+        // Lưu thứ tự sắp xếp hiện tại để form giữ nguyên
         ViewBag.CurrentSort = sortOrder;
 
-        // 4. Đếm tổng số lượng và tính số trang
+        // ====== BƯỚC 4: PHÂN TRANG ======
+        // Đếm tổng số BĐS sau khi lọc
         int totalItems = await propertiesQuery.CountAsync();
+        
+        // Tính tổng số trang (làm tròn lên)
         int totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
 
-        // 5. Cắt lấy dữ liệu của trang hiện tại
+        // Lấy dữ liệu của trang hiện tại
         var result = await propertiesQuery
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
+            .Skip((page - 1) * pageSize)  // Bỏ qua các BĐS của những trang trước
+            .Take(pageSize)               // Lấy đúng số lượng BĐS cần thiết
             .ToListAsync();
 
-        // 6. Truyền thông tin trang sang View
+        // Lưu thông tin phân trang sang view
         ViewBag.CurrentPage = page;
         ViewBag.TotalPages = totalPages;
 
         return View(result);
     }
 
-    // GET: Home/Details/5
+    /// <summary>
+    /// GET: Home/Details/{id}
+    /// Hiển thị chi tiết một bất động sản (tiêu đề, giá, mô tả, hình ảnh gallery)
+    /// </summary>
+    /// <param name="id">Mã bất động sản cần xem</param>
+    /// <returns>
+    /// - Nếu tìm thấy: View chi tiết BĐS
+    /// - Nếu không tìm thấy: 404 Not Found
+    /// </returns>
     public async Task<IActionResult> Details(int? id)
     {
+        // Kiểm tra ID hợp lệ
         if (id == null) return NotFound();
 
-        // Lấy thông tin nhà + kéo theo danh mục và album ảnh
+        // Lấy BĐS từ DB, kéo theo danh mục và danh sách ảnh gallery
         var property = await _context.Properties
             .Include(p => p.Category)
             .Include(p => p.PropertyImages)
             .FirstOrDefaultAsync(m => m.Id == id);
 
+        // Kiểm tra BĐS có tồn tại không
         if (property == null) return NotFound();
 
         return View(property);
     }
 
-    // TÀ THUẬT: Tự động tạo chức vụ Sale và 1 tài khoản Nhân viên
+    /// <summary>
+    /// [CHỨC NĂNG HỖ TRỢ] GET: Home/CreateSaleAccount
+    /// Tạo một role "Sale" và tài khoản nhân viên bán hàng mặc định
+    /// CẢNH BÁO: Chỉ dùng để test/phát triển, nên xóa trước khi deploy production
+    /// </summary>
     public async Task<IActionResult> CreateSaleAccount(
         [FromServices] UserManager<AppUser> userManager,
         [FromServices] RoleManager<IdentityRole> roleManager)
     {
-        // 1. Tạo chức vụ "Sale" trong Database nếu chưa có
+        // Bước 1: Tạo role "Sale" nếu chưa tồn tại
         if (!await roleManager.RoleExistsAsync("Sale"))
         {
             await roleManager.CreateAsync(new IdentityRole("Sale"));
         }
 
-        // 2. Tạo tài khoản cho nhân viên
+        // Bước 2: Tạo tài khoản nhân viên
         var saleUser = new AppUser
         {
             UserName = "nhanvien1@gmail.com",
@@ -125,7 +156,7 @@ public class HomeController : Controller
 
         if (result.Succeeded)
         {
-            // 3. Gắn mác "Sale" cho tài khoản này
+            // Bước 3: Gán role "Sale" cho tài khoản này
             await userManager.AddToRoleAsync(saleUser, "Sale");
 
             return Content(
@@ -137,21 +168,38 @@ public class HomeController : Controller
         return Content("Có lỗi xảy ra hoặc tài khoản đã tồn tại!");
     }
 
+    /// <summary>
+    /// GET: Home/Privacy
+    /// Hiển thị trang Chính sách bảo mật
+    /// </summary>
     public IActionResult Privacy()
     {
         return View();
     }
+
+    /// <summary>
+    /// GET: Home/About
+    /// Hiển thị trang Về chúng tôi
+    /// </summary>
     public IActionResult About()
     {
         return View();
     }
+
+    /// <summary>
+    /// GET: Home/Terms
+    /// Hiển thị trang Điều khoản dịch vụ
+    /// </summary>
     public IActionResult Terms()
     {
         return View();
     }
-    
-    
 
+    /// <summary>
+    /// GET: Home/Error
+    /// Hiển thị trang lỗi chung
+    /// Cache response để tối ưu performance
+    /// </summary>
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
@@ -161,14 +209,20 @@ public class HomeController : Controller
         });
     }
 
-    // TÀ THUẬT: Tự động sinh ra 10 căn nhà để test phân trang
+    /// <summary>
+    /// [CHỨC NĂNG HỖ TRỢ] GET: Home/AutoGenerateData
+    /// Tự động sinh ra 10 bất động sản mẫu để test phân trang
+    /// CẢNH BÁO: Chỉ dùng để test/phát triển, nên xóa trước khi deploy production
+    /// </summary>
     public async Task<IActionResult> AutoGenerateData()
     {
+        // Kiểm tra có danh mục nào trong DB không
         var category = await _context.Categories.FirstOrDefaultAsync();
 
         if (category == null)
             return Content("Lỗi: Bạn chưa có Danh mục nào trong Database!");
 
+        // Sinh ra 10 BĐS mẫu
         for (int i = 1; i <= 10; i++)
         {
             var newProperty = new Property
