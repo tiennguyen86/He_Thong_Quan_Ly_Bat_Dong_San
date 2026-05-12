@@ -16,7 +16,7 @@ namespace He_Thong_Quan_Ly_Bat_Dong_San.Areas.Admin.Controllers
     public class CategoriesController : Controller
     {
         
-        // ok 
+        // 
         private readonly ApplicationDbContext _context;
 
         public CategoriesController(ApplicationDbContext context)
